@@ -98,3 +98,51 @@ export interface ContactNumbers {
   primary: string;
   secondary: string;
 }
+
+// ── Orders (WhatsApp-based checkout) ─────────────────────────────────────────
+// Checkout flow: cart → form → server validates + saves → WA prefill → confirmation page
+// No payment gateway. Payment fields kept for future provider integration.
+
+export type OrderStatus =
+  | "new"
+  | "contacted"
+  | "confirmed"
+  | "delivered"
+  | "cancelled";
+
+// Payment fields are manual — admin updates them
+export type PaymentStatus = "unpaid" | "partial" | "paid";
+export type PaymentMethod = "cash" | "transfer" | "pos" | "other";
+
+export type DeliveryMethod = "pickup" | "delivery";
+
+// Order reference format: OKI-XXXX (e.g. OKI-1042)
+export interface Order {
+  id: number;
+  reference: string; // OKI-XXXX
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string | null;
+  deliveryMethod: DeliveryMethod;
+  deliveryArea: string | null;
+  deliveryAddress: string | null;
+  notes: string | null;
+  status: OrderStatus;
+  paymentStatus: PaymentStatus;
+  paymentMethod: PaymentMethod | null;
+  adminNotes: string | null;
+  totalKobo: number | null; // null if any item has no price
+  items: OrderItem[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrderItem {
+  id: number;
+  orderId: number;
+  productId: number | null; // null if product deleted
+  productNameSnapshot: string; // always preserved
+  productSlugSnapshot: string;
+  priceKoboSnapshot: number | null; // null → "Price to be confirmed"
+  qty: number;
+}

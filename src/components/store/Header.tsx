@@ -46,7 +46,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   // Phase 4 will wire this to Zustand quote list store
-  const quoteCount = 0;
+  const quoteCount: number = 0;
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-border shadow-sm">
@@ -121,7 +121,7 @@ export default function Header() {
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             </SignedIn>
 
             {/* Mobile menu toggle */}
