@@ -93,17 +93,32 @@ export const bundleItems = pgTable("bundle_items", {
   qty: integer("qty").default(1).notNull(),
 });
 
-// ── HERO SLIDES ───────────────────────────────────────────────────────────────
-export const heroSlides = pgTable("hero_slides", {
+// ── MEDIA SLOTS (Replaces hero_slides) ────────────────────────────────────────
+export const mediaSlots = pgTable("media_slots", {
   id: serial("id").primaryKey(),
-  title: varchar("title", { length: 255 }),
-  subtitle: text("subtitle"),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  label: varchar("label", { length: 255 }).notNull(),
+  location: varchar("location", { length: 100 }).notNull(), // home, shop, category_salon, etc.
+  layout: varchar("layout", { length: 20 }).default("hero").notNull(), // hero, banner, tile, card
+  defaultTransition: varchar("default_transition", { length: 20 }).default("fade").notNull(), // fade, slide, zoom, parallax
+  defaultDurationMs: integer("default_duration_ms").default(5000).notNull(),
+  autoplay: boolean("autoplay").default(true).notNull(),
+  showControls: boolean("show_controls").default(true).notNull(),
+});
+
+export const slides = pgTable("slides", {
+  id: serial("id").primaryKey(),
+  slotId: integer("slot_id").references(() => mediaSlots.id, { onDelete: "cascade" }).notNull(),
+  mediaType: varchar("media_type", { length: 10 }).default("image").notNull(), // image, video
+  publicId: text("public_id").notNull(), // Cloudinary public_id
+  posterPublicId: text("poster_public_id"), // For videos
+  altText: text("alt_text"),
+  headline: varchar("headline", { length: 255 }),
+  subtext: text("subtext"),
   btnLabel: varchar("btn_label", { length: 50 }),
   btnUrl: varchar("btn_url", { length: 255 }),
-  publicId: text("public_id").notNull(), // Cloudinary public_id
-  mediaType: varchar("media_type", { length: 10 }).default("image").notNull(), // image, video
-  transition: varchar("transition", { length: 50 }).default("fade").notNull(),
-  durationMs: integer("duration_ms").default(5000).notNull(),
+  transitionOverride: varchar("transition_override", { length: 20 }),
+  durationOverrideMs: integer("duration_override_ms"),
   sortOrder: integer("sort_order").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   startsAt: timestamp("starts_at"),

@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { eq } from "drizzle-orm";
 import * as schema from "../src/db/schema";
 import * as dotenv from "dotenv";
 import fs from "fs";
@@ -137,12 +138,76 @@ async function seed() {
     if (res.length > 0) {
       catIdMap.set(res[0].slug, res[0].id);
     } else {
-      const existing = await db.select().from(schema.categories).where(schema.categories.slug.eq(cats[i].slug));
+      const existing = await db.select().from(schema.categories).where(eq(schema.categories.slug, cats[i].slug));
       if (existing.length > 0) catIdMap.set(existing[0].slug, existing[0].id);
     }
   }
 
-  // 4. Products & Media (from /public/seed-media/)
+  // 4. Media Slots (Replaces hero slides)
+  console.log("Seeding media slots...");
+  const defaultSlots = [
+    { slug: "home-hero", label: "Home Page Hero", location: "home", layout: "hero", defaultTransition: "fade" },
+    { slug: "shop-banner", label: "Shop Page Banner", location: "shop", layout: "banner", defaultTransition: "slide" },
+    { slug: "cat-salon-beauty", label: "Category: Salon & Beauty", location: "category_salon-beauty", layout: "banner" },
+    { slug: "cat-home-electronics", label: "Category: Home Electronics", location: "category_home-electronics", layout: "banner" },
+    { slug: "cat-power-generators", label: "Category: Power & Generators", location: "category_power-generators", layout: "banner" },
+    { slug: "cat-creator-gear", label: "Category: Creator Gear", location: "category_creator-gear", layout: "banner" },
+    { slug: "tile-salon", label: "Tile: Salon", location: "home", layout: "tile" },
+    { slug: "tile-home", label: "Tile: Home", location: "home", layout: "tile" },
+    { slug: "tile-power", label: "Tile: Power", location: "home", layout: "tile" },
+    { slug: "tile-creator", label: "Tile: Creator", location: "home", layout: "tile" },
+    { slug: "bundle-starter", label: "Bundle Card: Starter", location: "home", layout: "card" },
+    { slug: "bundle-standard", label: "Bundle Card: Standard", location: "home", layout: "card" },
+    { slug: "bundle-premium", label: "Bundle Card: Premium", location: "home", layout: "card" },
+    { slug: "visit-us", label: "Visit Us Block", location: "home", layout: "card" }
+  ];
+
+  for (const slot of defaultSlots) {
+    await db.insert(schema.mediaSlots)
+      .values({ ...slot, autoplay: true, showControls: true })
+      .onConflictDoNothing();
+  }
+
+  // Scan for slot media
+  const slotsMediaDir = path.join(process.cwd(), "public", "seed-media", "slots");
+  if (fs.existsSync(slotsMediaDir)) {
+    const slotFolders = fs.readdirSync(slotsMediaDir, { withFileTypes: true }).filter(d => d.isDirectory());
+    for (const folder of slotFolders) {
+      const slotSlug = folder.name;
+      
+      const slotRecord = await db.select().from(schema.mediaSlots).where(eq(schema.mediaSlots.slug, slotSlug));
+      if (!slotRecord.length) continue;
+      const slotId = slotRecord[0].id;
+
+      const files = fs.readdirSync(path.join(slotsMediaDir, slotSlug));
+      let sortOrder = 0;
+      for (const file of files) {
+        const filePath = path.join(slotsMediaDir, slotSlug, file);
+        const isVideo = file.endsWith(".mp4") || file.endsWith(".webm");
+        
+        let publicId;
+        if (isVideo) {
+          publicId = await uploadVideoToCloudinary(filePath, `slots/${slotSlug}`);
+        } else {
+          publicId = await uploadToCloudinary(filePath, `slots/${slotSlug}`);
+        }
+
+        await db.insert(schema.slides).values({
+          slotId,
+          mediaType: isVideo ? "video" : "image",
+          publicId,
+          // Dummy poster for now if video. In real app, Cloudinary auto-generates poster.
+          posterPublicId: isVideo ? publicId.replace(/\.(mp4|webm)$/, ".jpg") : null,
+          sortOrder,
+          isSample: true,
+          isActive: true
+        });
+        sortOrder++;
+      }
+    }
+  }
+
+  // 5. Products & Media (from /public/seed-media/)
   console.log("Scanning /public/seed-media/ for products...");
   const seedMediaDir = path.join(process.cwd(), "public", "seed-media");
   
@@ -191,7 +256,7 @@ async function seed() {
         if (prodRes.length > 0) {
           productId = prodRes[0].id;
         } else {
-          const existing = await db.select().from(schema.products).where(schema.products.slug.eq(slug));
+          const existing = await db.select().from(schema.products).where(eq(schema.products.slug, slug));
           productId = existing[0].id;
         }
 

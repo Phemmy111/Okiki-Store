@@ -56,21 +56,17 @@ CREATE TABLE "categories" (
 	CONSTRAINT "categories_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE "hero_slides" (
+CREATE TABLE "media_slots" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"title" varchar(255),
-	"subtitle" text,
-	"btn_label" varchar(50),
-	"btn_url" varchar(255),
-	"public_id" text NOT NULL,
-	"media_type" varchar(10) DEFAULT 'image' NOT NULL,
-	"transition" varchar(50) DEFAULT 'fade' NOT NULL,
-	"duration_ms" integer DEFAULT 5000 NOT NULL,
-	"sort_order" integer DEFAULT 0 NOT NULL,
-	"is_active" boolean DEFAULT true NOT NULL,
-	"starts_at" timestamp,
-	"ends_at" timestamp,
-	"is_sample" boolean DEFAULT false NOT NULL
+	"slug" varchar(100) NOT NULL,
+	"label" varchar(255) NOT NULL,
+	"location" varchar(100) NOT NULL,
+	"layout" varchar(20) DEFAULT 'hero' NOT NULL,
+	"default_transition" varchar(20) DEFAULT 'fade' NOT NULL,
+	"default_duration_ms" integer DEFAULT 5000 NOT NULL,
+	"autoplay" boolean DEFAULT true NOT NULL,
+	"show_controls" boolean DEFAULT true NOT NULL,
+	CONSTRAINT "media_slots_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
 CREATE TABLE "order_items" (
@@ -166,6 +162,26 @@ CREATE TABLE "settings" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "slides" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"slot_id" integer NOT NULL,
+	"media_type" varchar(10) DEFAULT 'image' NOT NULL,
+	"public_id" text NOT NULL,
+	"poster_public_id" text,
+	"alt_text" text,
+	"headline" varchar(255),
+	"subtext" text,
+	"btn_label" varchar(50),
+	"btn_url" varchar(255),
+	"transition_override" varchar(20),
+	"duration_override_ms" integer,
+	"sort_order" integer DEFAULT 0 NOT NULL,
+	"is_active" boolean DEFAULT true NOT NULL,
+	"starts_at" timestamp,
+	"ends_at" timestamp,
+	"is_sample" boolean DEFAULT false NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "bundle_items" ADD CONSTRAINT "bundle_items_bundle_id_bundles_id_fk" FOREIGN KEY ("bundle_id") REFERENCES "public"."bundles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bundle_items" ADD CONSTRAINT "bundle_items_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order_items" ADD CONSTRAINT "order_items_order_id_orders_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -174,4 +190,5 @@ ALTER TABLE "product_media" ADD CONSTRAINT "product_media_product_id_products_id
 ALTER TABLE "products" ADD CONSTRAINT "products_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "products" ADD CONSTRAINT "products_brand_id_brands_id_fk" FOREIGN KEY ("brand_id") REFERENCES "public"."brands"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "quote_items" ADD CONSTRAINT "quote_items_quote_id_quote_requests_id_fk" FOREIGN KEY ("quote_id") REFERENCES "public"."quote_requests"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "quote_items" ADD CONSTRAINT "quote_items_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE set null ON UPDATE no action;
+ALTER TABLE "quote_items" ADD CONSTRAINT "quote_items_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "slides" ADD CONSTRAINT "slides_slot_id_media_slots_id_fk" FOREIGN KEY ("slot_id") REFERENCES "public"."media_slots"("id") ON DELETE cascade ON UPDATE no action;

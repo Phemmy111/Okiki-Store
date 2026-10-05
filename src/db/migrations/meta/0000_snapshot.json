@@ -1,5 +1,5 @@
 {
-  "id": "93b92532-cd0b-4eca-865f-1910c90e3963",
+  "id": "4143ffef-56c0-4ebf-acad-34d44a2c0747",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -367,8 +367,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.hero_slides": {
-      "name": "hero_slides",
+    "public.media_slots": {
+      "name": "media_slots",
       "schema": "",
       "columns": {
         "id": {
@@ -377,95 +377,72 @@
           "primaryKey": true,
           "notNull": true
         },
-        "title": {
-          "name": "title",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "subtitle": {
-          "name": "subtitle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "btn_label": {
-          "name": "btn_label",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "btn_url": {
-          "name": "btn_url",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "public_id": {
-          "name": "public_id",
-          "type": "text",
+        "slug": {
+          "name": "slug",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
-        "media_type": {
-          "name": "media_type",
-          "type": "varchar(10)",
+        "label": {
+          "name": "label",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "layout": {
+          "name": "layout",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'image'"
+          "default": "'hero'"
         },
-        "transition": {
-          "name": "transition",
-          "type": "varchar(50)",
+        "default_transition": {
+          "name": "default_transition",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": true,
           "default": "'fade'"
         },
-        "duration_ms": {
-          "name": "duration_ms",
+        "default_duration_ms": {
+          "name": "default_duration_ms",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "default": 5000
         },
-        "sort_order": {
-          "name": "sort_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "is_active": {
-          "name": "is_active",
+        "autoplay": {
+          "name": "autoplay",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
           "default": true
         },
-        "starts_at": {
-          "name": "starts_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "ends_at": {
-          "name": "ends_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "is_sample": {
-          "name": "is_sample",
+        "show_controls": {
+          "name": "show_controls",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "media_slots_slug_unique": {
+          "name": "media_slots_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -1109,6 +1086,139 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.slides": {
+      "name": "slides",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slot_id": {
+          "name": "slot_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "media_type": {
+          "name": "media_type",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'image'"
+        },
+        "public_id": {
+          "name": "public_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "poster_public_id": {
+          "name": "poster_public_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alt_text": {
+          "name": "alt_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "headline": {
+          "name": "headline",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subtext": {
+          "name": "subtext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "btn_label": {
+          "name": "btn_label",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "btn_url": {
+          "name": "btn_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transition_override": {
+          "name": "transition_override",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration_override_ms": {
+          "name": "duration_override_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "starts_at": {
+          "name": "starts_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ends_at": {
+          "name": "ends_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_sample": {
+          "name": "is_sample",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "slides_slot_id_media_slots_id_fk": {
+          "name": "slides_slot_id_media_slots_id_fk",
+          "tableFrom": "slides",
+          "tableTo": "media_slots",
+          "columnsFrom": [
+            "slot_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
