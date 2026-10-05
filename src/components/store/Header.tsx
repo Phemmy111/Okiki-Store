@@ -12,9 +12,8 @@ import {
 } from "lucide-react";
 import {
   SignInButton,
-  SignedIn,
-  SignedOut,
   UserButton,
+  useAuth
 } from "@clerk/nextjs";
 
 const WA_NUMBER =
@@ -45,6 +44,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isSignedIn, isLoaded } = useAuth();
   // Phase 4 will wire this to Zustand quote list store
   const quoteCount: number = 0;
 
@@ -113,16 +113,16 @@ export default function Header() {
             </Link>
 
             {/* Auth */}
-            <SignedOut>
+            {isLoaded && !isSignedIn && (
               <SignInButton mode="modal">
                 <button className="hidden sm:block text-sm font-medium text-navy hover:text-blue transition-colors px-2 py-1 rounded">
                   Sign in
                 </button>
               </SignInButton>
-            </SignedOut>
-            <SignedIn>
+            )}
+            {isLoaded && isSignedIn && (
               <UserButton />
-            </SignedIn>
+            )}
 
             {/* Mobile menu toggle */}
             <button
