@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* ============================================================
+   OKIKI Electronics Store — Design Tokens (Tailwind v4)
+   All tokens defined here become Tailwind utility classes:
+   --color-navy  →  bg-navy, text-navy, border-navy, etc.
+   --font-display →  font-display
+   ============================================================ */
+
+@theme {
+  /* --- Brand Colors (sampled from OKIKI crown logo) --- */
+  --color-navy:            #0B1F4B;  /* Deep navy — hero, nav, strong sections */
+  --color-navy-mid:        #14306E;  /* Mid navy — secondary section backgrounds */
+  --color-blue:            #1A4DA2;  /* Royal blue — primary buttons, links, CTAs */
+  --color-blue-light:      #2E6FD4;  /* Hover state for blue */
+
+  --color-gold:            #C9960C;  /* Crown body — accents, badges, highlights */
+  --color-gold-light:      #E8C040;  /* Crown highlights — hover, shimmer end stop */
+  --color-gold-dark:       #8B6914;  /* Crown shadow depth */
+  --color-gold-pale:       #FBF3D5;  /* Tint for trust badge backgrounds */
+
+  /* --- Surfaces --- */
+  --color-page:            #F3F5F9;  /* Cool-gray page background */
+  --color-card:            #FFFFFF;  /* White card surfaces */
+
+  /* --- Text --- */
+  --color-text-primary:    #0D1117;
+  --color-text-secondary:  #4B5563;
+  --color-text-muted:      #9CA3AF;
+
+  /* --- UI --- */
+  --color-border:          #E2E8F0;
+  --color-success:         #16A34A;
+  --color-danger:          #DC2626;
+  --color-warning:         #D97706;
+  --color-whatsapp:        #25D366;
+  --color-whatsapp-dark:   #128C7E;
+
+  /* --- Typography --- */
+  /* --font-playfair and --font-inter are CSS vars injected by next/font */
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-sans:    var(--font-inter), system-ui, -apple-system, sans-serif;
+
+  /* --- Spacing scale additions --- */
+  --spacing-18:  4.5rem;
+  --spacing-22:  5.5rem;
+  --spacing-88:  22rem;
+  --spacing-128: 32rem;
+
+  /* --- Border radius --- */
+  --radius-4xl:  2rem;
+}
+
+/* ============================================================
+   Base resets
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+}
+
+/* ============================================================
+   Accessibility — focus rings
+   ============================================================ */
+
+*:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   Reduced motion — disable all transitions / animations
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+
+@keyframes gold-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes whatsapp-pulse {
+  0%   { box-shadow: 0 0 0 0 rgb(37 211 102 / 0.6); }
+  70%  { box-shadow: 0 0 0 12px rgb(37 211 102 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(37 211 102 / 0); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes fade-up {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ============================================================
+   Custom utilities (@utility — Tailwind v4)
+   ============================================================ */
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-border) 25%,
+    #f1f5f9 50%,
+    var(--color-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@utility gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-gold) 0%,
+    var(--color-gold-light) 50%,
+    var(--color-gold) 100%
+  );
+  background-size: 200% auto;
+  animation: gold-shimmer 2s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility whatsapp-pulse {
+  animation: whatsapp-pulse 2s ease-out infinite;
+}
+
+@utility animate-fade-up {
+  animation: fade-up 0.4s ease-out both;
+}
