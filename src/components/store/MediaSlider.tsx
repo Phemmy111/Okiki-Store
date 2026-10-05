@@ -1,26 +1,59 @@
 import { getMediaSlot } from "@/lib/data/storefront";
 import MediaSliderClient from "./MediaSliderClient";
-import { Image as ImageIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
-export default async function MediaSlider({ slot }: { slot: string }) {
+// Per-slot fallback background config
+const SLOT_FALLBACKS: Record<string, { src: string; alt: string }> = {
+  "home-hero":         { src: "/fallbacks/hero-salon.webp",   alt: "A well-lit salon interior with styling chairs and mirrors" },
+  "shop-banner":       { src: "/fallbacks/hero-home.webp",    alt: "Modern home appliances arranged on a counter" },
+  "tile-salon":        { src: "/fallbacks/tile-salon.webp",   alt: "Salon styling chairs and mirrors" },
+  "tile-home":         { src: "/fallbacks/hero-home.webp",    alt: "Home electronics display" },
+  "tile-power":        { src: "/fallbacks/hero-power.webp",   alt: "Generator and power setup" },
+  "tile-creator":      { src: "/fallbacks/hero-creator.webp", alt: "Creator desk with ring light" },
+  "bundle-starter":    { src: "/fallbacks/tile-salon.webp",   alt: "Starter salon bundle" },
+  "bundle-standard":   { src: "/fallbacks/hero-salon.webp",   alt: "Standard salon bundle" },
+  "bundle-premium":    { src: "/fallbacks/hero-creator.webp", alt: "Premium salon bundle" },
+  "visit-us":          { src: "/fallbacks/hero-home.webp",    alt: "Store exterior" },
+  "cat-salon-beauty":  { src: "/fallbacks/tile-salon.webp",   alt: "Salon and beauty category" },
+  "cat-home-electronics": { src: "/fallbacks/hero-home.webp", alt: "Home electronics category" },
+  "cat-power-generators": { src: "/fallbacks/hero-power.webp", alt: "Power and generators category" },
+  "cat-creator-gear":  { src: "/fallbacks/hero-creator.webp", alt: "Creator gear category" },
+};
+
+export interface SlotDefaults {
+  headline?: string;
+  subtext?: string;
+  btnLabel?: string;
+  btnUrl?: string;
+}
+
+export interface MediaSliderProps {
+  slot: string;
+  /** Text content to show OVER the media background. Always rendered, even in fallback. */
+  children?: ReactNode;
+  /** Per-slide default text. If a slide has no headline/subtext/btn, these are used. */
+  defaults?: SlotDefaults[];
+  className?: string;
+}
+
+export default async function MediaSlider({
+  slot,
+  children,
+  defaults,
+  className,
+}: MediaSliderProps) {
   const data = await getMediaSlot(slot);
-  
-  if (!data || data.slides.length === 0) {
-    // Fallback: navy/gold design with a line icon
-    return (
-      <div className="w-full h-full min-h-[250px] bg-gradient-to-br from-navy to-navy-mid border border-gold/20 flex flex-col items-center justify-center p-8 text-center text-white relative rounded-2xl">
-        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "linear-gradient(rgba(201,150,12,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(201,150,12,0.5) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
-        <div className="relative z-10 flex flex-col items-center gap-3">
-          <ImageIcon className="h-10 w-10 text-gold opacity-80" strokeWidth={1.5} />
-          {data?.label ? (
-            <h3 className="font-display font-bold text-xl md:text-2xl text-gold-pale">{data.label}</h3>
-          ) : (
-            <h3 className="font-display font-bold text-xl md:text-2xl text-gold-pale">OKIKI Store</h3>
-          )}
-        </div>
-      </div>
-    );
-  }
+  const fallback = SLOT_FALLBACKS[slot];
 
-  return <MediaSliderClient data={data} />;
+  return (
+    <MediaSliderClient
+      data={data}
+      fallbackSrc={fallback?.src ?? "/fallbacks/hero-salon.webp"}
+      fallbackAlt={fallback?.alt ?? "OKIKI Store"}
+      defaults={defaults}
+      className={className}
+    >
+      {children}
+    </MediaSliderClient>
+  );
 }

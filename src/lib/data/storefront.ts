@@ -5,6 +5,7 @@ import {
   products,
   productMedia,
   bundles,
+  bundleItems,
   mediaSlots,
   slides,
   settings,
@@ -140,6 +141,48 @@ export async function getProductBySlug(slug: string) {
     .orderBy(asc(productMedia.sortOrder), desc(productMedia.id));
 
   return { ...prod[0], media };
+}
+
+// ── BUNDLES ───────────────────────────────────────────────────────────────────
+export async function getBundles() {
+  return await db
+    .select()
+    .from(bundles)
+    .where(eq(bundles.isPublished, true))
+    .orderBy(asc(bundles.id));
+}
+
+export async function getBundleBySlug(slug: string) {
+  const bRes = await db
+    .select()
+    .from(bundles)
+    .where(eq(bundles.slug, slug))
+    .limit(1);
+
+  if (!bRes.length) return null;
+  const bundle = bRes[0];
+
+  // Get items
+  const items = await db
+    .select({
+      id: bundleItems.id,
+      qty: bundleItems.qty,
+      product: products,
+    })
+    .from(bundleItems)
+    .leftJoin(products, eq(bundleItems.productId, products.id))
+    .where(eq(bundleItems.bundleId, bundle.id));
+
+  // Attach primary media to items
+  const productList = items.map((i) => i.product).filter(Boolean);
+  const productsWithMedia = await attachPrimaryMedia(productList);
+
+  const enrichedItems = items.map((i) => ({
+    ...i,
+    product: productsWithMedia.find((p) => p.id === i.product?.id),
+  }));
+
+  return { ...bundle, items: enrichedItems };
 }
 
 // Helper to attach the first image (primary media) to a list of products
