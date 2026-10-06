@@ -14,10 +14,10 @@ export const metadata: Metadata = { title: "Home" };
 /* ── Hero per-slide text defaults ────────────────────────────────────────── */
 const HERO_DEFAULTS = [
   { headline: "Quality Products. Reliable Service. Trusted Dealer." },
-  { headline: "Equip your salon from the first chair to the last mirror." },
-  { headline: "Top-tier Electronics for a Modern Home." },
-  { headline: "Power for your home and business." },
-  { headline: "Light up your content with Premium Gear." },
+  { headline: "Welcome to Okiki Store. Premium Brands. Unbeatable Prices." },
+  { headline: "Equip Your Salon. Gold Standard Chairs and Accessories." },
+  { headline: "Uninterrupted Power. Reliable Generators for Every Need." },
+  { headline: "Elevate Your Craft. Premium Gear for Modern Creators." },
 ];
 
 /* ── Category tile content ───────────────────────────────────────────────── */
