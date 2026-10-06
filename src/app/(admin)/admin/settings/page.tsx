@@ -1,20 +1,28 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { db } from "@/db";
+import { settings } from "@/db/schema";
+import { requireAdminDb } from "@/lib/data/auth";
+import SettingsClient from "./client";
 
-export const metadata: Metadata = { title: "Settings | Admin" };
+export const metadata: Metadata = { title: "Store Settings | Admin" };
 
-export default function AdminSettingsPage() {
+export default async function AdminSettingsPage() {
+  await requireAdminDb();
+
+  const rows = await db.select().from(settings);
+  const settingsMap: Record<string, string> = Object.fromEntries(
+    rows.map((r) => [r.key, r.value])
+  );
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-navy mb-1">Store Settings</h1>
-          <p className="text-sm text-text-secondary">Manage contact details, social links, and global store settings.</p>
-        </div>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-navy">Store Settings</h1>
+        <p className="text-sm text-text-secondary mt-1">
+          Manage your store's contact details, social links, and global configuration.
+        </p>
       </div>
-      
-      <div className="bg-white border border-border rounded-2xl shadow-sm p-10 text-center text-text-muted">
-        Settings management UI coming soon...
-      </div>
+      <SettingsClient initialSettings={settingsMap} />
     </div>
   );
 }
