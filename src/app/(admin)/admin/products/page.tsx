@@ -4,6 +4,7 @@ import { products, categories, brands } from "@/db/schema";
 import { requireAdminDb } from "@/lib/data/auth";
 import { desc, eq } from "drizzle-orm";
 import AdminProductsClient from "./client";
+import Link from "next/link";
 
 export const metadata: Metadata = { title: "Products | Admin" };
 
@@ -56,9 +57,9 @@ export default async function AdminProductsPage() {
           <h1 className="text-2xl font-bold text-navy mb-1">Products</h1>
           <p className="text-sm text-text-secondary">Manage store inventory, prices, and stock status.</p>
         </div>
-        <button className="shrink-0 bg-navy text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-navy-mid transition-colors w-full sm:w-auto">
+        <Link href="/admin/products/new" className="shrink-0 bg-navy text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-navy-mid transition-colors w-full sm:w-auto text-center inline-block">
           + Add Product
-        </button>
+        </Link>
       </div>
       
       <AdminProductsClient
