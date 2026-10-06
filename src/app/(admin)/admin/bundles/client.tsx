@@ -72,12 +72,16 @@ export default function AdminBundlesClient({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={labelCls}>Bundle Name *</label>
-                <input
-                  name="name"
-                  required
-                  placeholder="e.g. Starter Bundle"
-                  className={inputCls}
-                />
+                <select name="name" required className={inputCls}>
+                  <option value="">— Select a bundle tier —</option>
+                  <option value="Starter">🟢 Starter Bundle</option>
+                  <option value="Standard">🔵 Standard Bundle</option>
+                  <option value="Premium">🟡 Premium Bundle</option>
+                  <option value="Custom">✏️ Custom Bundle</option>
+                </select>
+                <p className="text-[11px] text-text-muted mt-1">
+                  Starter → /bundles/starter &nbsp;·&nbsp; Standard → /bundles/standard &nbsp;·&nbsp; Premium → /bundles/premium
+                </p>
               </div>
               <div>
                 <label className={labelCls}>Price Mode</label>
