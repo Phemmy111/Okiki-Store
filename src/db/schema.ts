@@ -13,7 +13,8 @@ import {
 export const admins = pgTable("admins", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  createdBy: varchar("created_by", { length: 255 }), // email of admin who created this
+  role: varchar("role", { length: 50 }).default("admin").notNull(), // 'super_admin' | 'admin'
+  createdBy: varchar("created_by", { length: 255 }), // email of admin who added this
   isSample: boolean("is_sample").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

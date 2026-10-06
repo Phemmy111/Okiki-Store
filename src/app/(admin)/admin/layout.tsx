@@ -15,6 +15,7 @@ const ADMIN_NAV = [
   { href: "/admin/bundles", label: "🎁  Bundles" },
   { href: "/admin/media-slots", label: "🖼️  Media Slots" },
   { href: "/admin/quotes", label: "💬  Quote Requests" },
+  { href: "/admin/admins", label: "👥  Admins" },
   { href: "/admin/settings", label: "⚙️  Settings" },
 ];
 
