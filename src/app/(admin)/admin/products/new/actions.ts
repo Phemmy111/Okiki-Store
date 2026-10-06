@@ -24,6 +24,7 @@ export async function addProductAction(formData: FormData) {
   const isHotDeal = formData.get("isHotDeal") === "on";
   const isPublished = formData.get("isPublished") !== "off";
   const mediaPublicIds = (formData.get("mediaPublicIds") as string || "").split(",").filter(Boolean);
+  const mediaTypes = (formData.get("mediaTypes") as string || "").split(",").filter(Boolean);
 
   // Auto-generate slug from name
   const slug = name
@@ -59,7 +60,7 @@ export async function addProductAction(formData: FormData) {
       mediaPublicIds.map((publicId, i) => ({
         productId: product.id,
         publicId,
-        type: "image" as const,
+        type: (mediaTypes[i] === "video" ? "video" : "image") as "image" | "video",
         sortOrder: i,
       }))
     );

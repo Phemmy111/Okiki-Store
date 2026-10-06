@@ -20,7 +20,7 @@ export default function AddProductForm({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [mediaPublicIds, setMediaPublicIds] = useState<string[]>([]);
+  const [mediaItems, setMediaItems] = useState<{ publicId: string; type: "image" | "video" }[]>([]);
   const [priceMode, setPriceMode] = useState("show");
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -42,29 +42,31 @@ export default function AddProductForm({
           callback(data.signature);
         },
         apiKey,
-        resourceType: "image",
+        resourceType: "auto",
         multiple: true,
         maxFiles: 10,
         sources: ["local", "url"],
       },
       (error: any, result: any) => {
         if (!error && result?.event === "success") {
-          setMediaPublicIds((prev) => [...prev, result.info.public_id]);
+          const type = result.info.resource_type === "video" ? "video" : "image";
+          setMediaItems((prev) => [...prev, { publicId: result.info.public_id, type }]);
         }
       }
     );
     widget.open();
   };
 
-  const removeImage = (publicId: string) => {
-    setMediaPublicIds((prev) => prev.filter((id) => id !== publicId));
+  const removeMedia = (publicId: string) => {
+    setMediaItems((prev) => prev.filter((m) => m.publicId !== publicId));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formRef.current) return;
     const fd = new FormData(formRef.current);
-    fd.set("mediaPublicIds", mediaPublicIds.join(","));
+    fd.set("mediaPublicIds", mediaItems.map(m => m.publicId).join(","));
+    fd.set("mediaTypes", mediaItems.map(m => m.type).join(","));
     startTransition(async () => {
       await addProductAction(fd);
     });
@@ -174,30 +176,39 @@ export default function AddProductForm({
           </div>
         </div>
 
-        {/* Images */}
+        {/* Media (Images + Videos) */}
         <div className={sectionCls}>
-          <h2 className="font-bold text-navy text-base border-b border-border pb-3">Product Images</h2>
+          <h2 className="font-bold text-navy text-base border-b border-border pb-3">Product Media</h2>
+          <p className="text-xs text-text-muted -mt-2">Upload images and/or videos. The first image will be the main thumbnail.</p>
 
           <button type="button" onClick={openWidget} className="bg-page border-2 border-dashed border-border hover:border-gold text-navy text-sm font-semibold rounded-xl px-6 py-4 w-full transition-colors">
-            📷 Upload Images (click to open uploader)
+            📷🎥 Upload Images & Videos (click to open uploader)
           </button>
 
-          {mediaPublicIds.length > 0 && (
+          {mediaItems.length > 0 && (
             <div className="flex flex-wrap gap-3 mt-2">
-              {mediaPublicIds.map((id, i) => (
-                <div key={id} className="relative w-24 h-24 rounded-xl overflow-hidden border border-border group">
+              {mediaItems.map((item, i) => (
+                <div key={item.publicId} className="relative w-24 h-24 rounded-xl overflow-hidden border border-border group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`https://res.cloudinary.com/${cloudName}/image/upload/w_200,h_200,c_fill/${id}`}
-                    alt={`Image ${i + 1}`}
+                    src={item.type === "video"
+                      ? `https://res.cloudinary.com/${cloudName}/video/upload/w_200,h_200,c_fill,so_0/${item.publicId}.jpg`
+                      : `https://res.cloudinary.com/${cloudName}/image/upload/w_200,h_200,c_fill/${item.publicId}`
+                    }
+                    alt={`Media ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
                   {i === 0 && (
                     <span className="absolute top-1 left-1 bg-gold text-navy text-[9px] font-bold px-1 py-0.5 rounded">MAIN</span>
                   )}
+                  {item.type === "video" && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                      <span className="text-white text-base">▶</span>
+                    </div>
+                  )}
                   <button
                     type="button"
-                    onClick={() => removeImage(id)}
+                    onClick={() => removeMedia(item.publicId)}
                     className="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     ✕
