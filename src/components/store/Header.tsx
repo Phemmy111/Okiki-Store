@@ -125,10 +125,10 @@ export default function Header() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/admin"
-                  className="hidden sm:flex items-center gap-1 text-xs font-semibold text-navy/60 hover:text-navy transition-colors px-2 py-1 rounded hover:bg-page"
+                  className="flex items-center gap-1 text-xs font-bold bg-gold/10 text-gold-dark border border-gold/30 hover:bg-gold/20 transition-colors px-3 py-1.5 rounded-full"
                   title="Admin Dashboard"
                 >
-                  ⚙️ Admin
+                  ⚙️ <span className="hidden sm:inline">Admin</span>
                 </Link>
                 <UserButton />
               </div>
@@ -203,7 +203,7 @@ export default function Header() {
           </nav>
 
           {/* Mobile WhatsApp */}
-          <div className="px-4 py-3">
+          <div className="px-4 py-3 border-t border-border space-y-2">
             <a
               href={`https://wa.me/${WA_NUMBER}`}
               target="_blank"
@@ -213,6 +213,26 @@ export default function Header() {
               <WhatsAppIcon className="h-4 w-4" />
               Chat on WhatsApp
             </a>
+
+            {/* Mobile Admin / Sign-in */}
+            {isLoaded && !isSignedIn && (
+              <Link
+                href="/sign-in"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-2 w-full border border-border text-navy font-semibold py-2.5 rounded-full hover:bg-page transition-colors text-sm"
+              >
+                Sign in
+              </Link>
+            )}
+            {isLoaded && isSignedIn && (
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-2 w-full bg-gold/10 border border-gold/30 text-gold-dark font-bold py-2.5 rounded-full hover:bg-gold/20 transition-colors text-sm"
+              >
+                ⚙️ Go to Admin Dashboard
+              </Link>
+            )}
           </div>
         </div>
       )}
