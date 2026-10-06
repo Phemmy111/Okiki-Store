@@ -37,13 +37,13 @@ type Slide = {
 export default function MediaManagerClient({
   slots,
   activeSlot,
-  slides,
+  allSlides,
   cloudName,
   apiKey,
 }: {
   slots: Slot[];
   activeSlot: Slot | null;
-  slides: Slide[];
+  allSlides: Slide[];
   cloudName: string;
   apiKey: string;
 }) {
@@ -53,6 +53,8 @@ export default function MediaManagerClient({
   const [transition, setTransition] = useState(activeSlot?.defaultTransition ?? "fade");
   const [duration, setDuration] = useState(activeSlot?.defaultDurationMs ?? 5000);
   const [saved, setSaved] = useState(false);
+
+  const activeSlides = activeSlot ? allSlides.filter(s => s.slotId === activeSlot.id) : [];
 
   const openWidget = () => {
     if (typeof window === "undefined" || !(window as any).cloudinary) {
@@ -99,7 +101,7 @@ export default function MediaManagerClient({
         slotId: activeSlot.id,
         mediaType: info.resource_type === "video" ? "video" : "image",
         publicId: info.public_id,
-        sortOrder: slides.length,
+        sortOrder: activeSlides.length,
         isActive: true,
       });
       router.refresh();
@@ -118,14 +120,16 @@ export default function MediaManagerClient({
 
   const handleSave = async () => {
     if (!activeSlot) return;
-    // Save transition + duration back to slot via an updateSlot action
     await fetch("/api/admin/update-slot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slotId: activeSlot.id, transition, duration }),
     });
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setTimeout(() => {
+      setSaved(false);
+      router.push("/admin/media-slots");
+    }, 1000);
     router.refresh();
   };
 
@@ -138,24 +142,54 @@ export default function MediaManagerClient({
 
   if (!activeSlot) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {slots.map((slot) => (
-          <div key={slot.id} className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between items-start">
-            <div>
-              <h3 className="font-bold text-navy mb-1">{slot.label}</h3>
-              <div className="flex items-center gap-2 text-xs text-text-muted mb-4">
-                <span className="bg-page px-2 py-0.5 rounded border border-border">{slot.layout}</span>
-                <span>{slot.defaultDurationMs / 1000}s {slot.defaultTransition}</span>
+      <div className="space-y-6 max-w-5xl">
+        {slots.map((slot) => {
+          const slotSlides = allSlides.filter(s => s.slotId === slot.id);
+          return (
+            <div key={slot.id} className="bg-white border border-border rounded-2xl p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                  <h3 className="font-bold text-navy text-lg">{slot.label}</h3>
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-text-muted mt-1 uppercase tracking-wide">
+                    <span className="bg-page px-2 py-1 rounded border border-border">{slot.defaultTransition}</span>
+                    <span className="bg-page px-2 py-1 rounded border border-border">{(slot.defaultDurationMs / 1000).toFixed(1)}S</span>
+                    <span className="bg-page px-2 py-1 rounded border border-border">{slotSlides.length} ITEMS</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => router.push(`?slotId=${slot.id}`)}
+                  className="shrink-0 text-sm font-semibold bg-navy hover:bg-navy/80 text-white px-5 py-2.5 rounded-xl transition-colors"
+                >
+                  Configure Slider
+                </button>
               </div>
+
+              {slotSlides.length === 0 ? (
+                <div className="bg-page border border-dashed border-border rounded-xl h-28 flex items-center justify-center">
+                  <span className="text-sm text-text-muted">No media added yet</span>
+                </div>
+              ) : (
+                <div className="flex gap-4 overflow-x-auto pb-2">
+                  {slotSlides.map((slide, i) => (
+                    <div key={slide.id} className="relative w-36 h-36 shrink-0 rounded-xl overflow-hidden bg-black/5 border border-border">
+                       {/* eslint-disable-next-line @next/next/no-img-element */}
+                       <img
+                          src={thumbUrl(slide)}
+                          alt={`Slide ${i + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {slide.mediaType === "video" && (
+                          <div className="absolute top-2 left-2">
+                            <span className="text-[10px] font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">▶</span>
+                          </div>
+                        )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <button
-              onClick={() => router.push(`?slotId=${slot.id}`)}
-              className="text-sm font-semibold text-gold bg-gold/10 px-4 py-2 rounded-lg hover:bg-gold/20 transition-colors w-full text-center"
-            >
-              Configure Slider
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   }
@@ -241,7 +275,7 @@ export default function MediaManagerClient({
               </div>
 
               {/* Media strip */}
-              {slides.length === 0 ? (
+              {activeSlides.length === 0 ? (
                 <div className="border-2 border-dashed border-border rounded-2xl py-14 flex flex-col items-center justify-center text-center bg-page">
                   <span className="text-4xl mb-3 opacity-30">🖼️</span>
                   <p className="text-text-secondary text-sm">Click <strong>"Add Media"</strong> to upload images or MP4 videos.</p>
@@ -249,7 +283,7 @@ export default function MediaManagerClient({
                 </div>
               ) : (
                 <div className="flex gap-3 overflow-x-auto pb-2">
-                  {slides.map((slide, idx) => (
+                  {activeSlides.map((slide, idx) => (
                     <div key={slide.id} className="relative shrink-0 w-44 group">
                       {/* Thumbnail */}
                       <div className="w-44 h-28 rounded-xl overflow-hidden bg-black/5 border border-border">
