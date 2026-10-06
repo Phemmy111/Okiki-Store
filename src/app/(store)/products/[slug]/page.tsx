@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getProductBySlug, getStoreSettings } from "@/lib/data/storefront";
 import { ChevronRight, ShieldCheck, Truck, PackageCheck, AlertCircle, Tag } from "lucide-react";
 import ProductMediaGallery from "./MediaGallery";
+import AddToQuoteButton from "@/components/store/AddToQuoteButton";
 
 export async function generateMetadata({
   params,
@@ -145,6 +146,15 @@ export default async function ProductDetailsPage({
               >
                 💬 Ask a Question
               </a>
+
+              <AddToQuoteButton
+                productId={product.id}
+                name={product.name}
+                slug={product.slug}
+                priceKobo={product.priceKobo}
+                imagePublicId={product.media?.[0]?.publicId ?? null}
+                variant="detail"
+              />
             </div>
 
             {/* Trust badges */}

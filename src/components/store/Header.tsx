@@ -3,17 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  ShoppingBag,
-  Search,
-  Menu,
-  X,
-  Phone,
-} from "lucide-react";
-import {
-  UserButton,
-  useAuth
-} from "@clerk/nextjs";
+import { Search, Menu, X } from "lucide-react";
+import { UserButton, useAuth } from "@clerk/nextjs";
+import QuoteCount from "./QuoteCount";
 
 const WA_NUMBER =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348022932216";
@@ -44,8 +36,6 @@ function WhatsAppIcon({ className }: { className?: string }) {
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isSignedIn, isLoaded } = useAuth();
-  // Phase 4 will wire this to Zustand quote list store
-  const quoteCount: number = 0;
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-border shadow-sm">
@@ -95,22 +85,8 @@ export default function Header() {
               Chat with us
             </a>
 
-            {/* Quote list icon */}
-            <Link
-              href="/quote"
-              className="relative p-2 rounded-full hover:bg-page transition-colors"
-              aria-label={`Quote list${quoteCount > 0 ? ` — ${quoteCount} item${quoteCount !== 1 ? "s" : ""}` : ""}`}
-            >
-              <ShoppingBag className="h-5 w-5 text-navy" aria-hidden />
-              {quoteCount > 0 && (
-                <span
-                  className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-gold text-white text-[10px] font-bold rounded-full flex items-center justify-center"
-                  aria-hidden
-                >
-                  {quoteCount > 9 ? "9+" : quoteCount}
-                </span>
-              )}
-            </Link>
+            {/* Live quote count */}
+            <QuoteCount />
 
             {/* Auth */}
             {isLoaded && !isSignedIn && (
