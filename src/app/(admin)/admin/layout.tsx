@@ -32,7 +32,7 @@ const ADMIN_NAV = [
   { href: "/admin/categories", label: "🗂️  Categories" },
   { href: "/admin/brands", label: "🏷️  Brands" },
   { href: "/admin/bundles", label: "🎁  Bundles" },
-  { href: "/admin/hero-slides", label: "🖼️  Hero Slides" },
+  { href: "/admin/media-slots", label: "🖼️  Media Slots" },
   { href: "/admin/quotes", label: "💬  Quote Requests" },
   { href: "/admin/settings", label: "⚙️  Settings" },
 ];

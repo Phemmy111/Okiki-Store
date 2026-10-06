@@ -1,0 +1,43 @@
+import { getAllMediaSlots, getSlidesForSlot } from "@/lib/data/admin-media";
+import MediaManagerClient from "./client";
+import { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Media Slots | Admin" };
+
+export default async function AdminMediaSlotsPage({
+  searchParams,
+}: {
+  searchParams: { slotId?: string };
+}) {
+  const slots = await getAllMediaSlots();
+  
+  // Default to the first slot if none selected
+  const activeSlotId = searchParams.slotId 
+    ? parseInt(searchParams.slotId) 
+    : slots[0]?.id;
+
+  const slides = activeSlotId 
+    ? await getSlidesForSlot(activeSlotId)
+    : [];
+
+  const activeSlot = slots.find((s) => s.id === activeSlotId) || null;
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-navy mb-2">Media Slots Manager</h1>
+        <p className="text-sm text-text-secondary">
+          Manage backgrounds, videos, and custom headline text for specific areas of the storefront.
+        </p>
+      </div>
+
+      <MediaManagerClient 
+        slots={slots} 
+        activeSlot={activeSlot} 
+        slides={slides}
+        cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || ""}
+        apiKey={process.env.CLOUDINARY_API_KEY || ""}
+      />
+    </div>
+  );
+}
