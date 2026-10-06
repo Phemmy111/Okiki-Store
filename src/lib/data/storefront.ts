@@ -81,7 +81,7 @@ export async function getFeaturedProducts(limit = 4) {
   return attachPrimaryMedia(prods);
 }
 
-export async function getNewArrivals(limit = 4) {
+export async function getNewArrivals(limit = 6) {
   const prods = await db
     .select()
     .from(products)
