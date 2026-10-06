@@ -2,7 +2,7 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import { admins } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { ilike } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export async function requireAdminDb() {
@@ -23,11 +23,11 @@ export async function requireAdminDb() {
   const adminRecords = await db
     .select()
     .from(admins)
-    .where(eq(admins.email, email))
+    .where(ilike(admins.email, email))
     .limit(1);
 
   if (adminRecords.length === 0) {
-    redirect("/"); // Or to a specific "unauthorized" page
+    redirect("/"); 
   }
 
   return { userId, email, adminId: adminRecords[0].id };

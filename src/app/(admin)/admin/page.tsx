@@ -41,10 +41,10 @@ export default async function AdminOverviewPage() {
     <div>
       <div className="mb-8">
         <h1 className="font-display text-2xl md:text-3xl font-bold text-navy">
-          Dashboard Overview
+          Welcome back
         </h1>
         <p className="text-text-secondary mt-1 text-sm">
-          Live database metrics and current build progress.
+          Here is what's happening with your store today.
         </p>
       </div>
 
@@ -65,44 +65,6 @@ export default async function AdminOverviewPage() {
         ))}
       </div>
 
-      {/* Phase status */}
-      <div className="bg-gold-pale border border-gold/30 rounded-xl p-5">
-        <h2 className="font-semibold text-navy mb-3">🏗️ Build Progress</h2>
-        <div className="space-y-2 text-sm">
-          {[
-            { phase: "Phase 0", label: "Design & Implementation Plan", done: true },
-            { phase: "Phase 1", label: "Foundation & Auth", done: true },
-            { phase: "Phase 2", label: "Database & Seed", done: true },
-            { phase: "Phase 3", label: "Storefront & Media", done: true },
-            { phase: "Phase 4", label: "Quotes / Cart (Working on this)", done: false, active: true },
-            { phase: "Phase 5", label: "Admin Dashboard (Media Slots Done)", done: false },
-            { phase: "Phase 6", label: "Polish & Final Release", done: false },
-          ].map((item) => (
-            <div key={item.phase} className="flex items-center gap-3">
-              <span
-                className={`text-lg ${item.done ? "text-success" : "text-text-muted"}`}
-                aria-hidden
-              >
-                {item.done ? "✅" : "⏳"}
-              </span>
-              <span
-                className={`font-medium ${item.active ? "text-navy" : item.done ? "text-success" : "text-text-muted"}`}
-              >
-                {item.phase}
-              </span>
-              <span className={item.active ? "text-navy font-semibold" : "text-text-secondary"}>
-                {item.label}
-              </span>
-              {item.active && (
-                <span className="ml-auto bg-gold text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  CURRENT
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Quick actions */}
       <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
@@ -114,7 +76,7 @@ export default async function AdminOverviewPage() {
           <Link
             key={btn.label}
             href={btn.href}
-            className="flex flex-col items-center justify-center gap-2 bg-white border border-border rounded-xl p-4 text-sm font-medium text-navy hover:bg-page transition-colors text-center"
+            className="flex flex-col items-center justify-center gap-2 bg-white border border-border rounded-xl p-4 text-sm font-medium text-navy hover:bg-page transition-colors text-center shadow-sm"
           >
             <span className="text-xl" aria-hidden>{btn.icon}</span>
             {btn.label}
