@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 export async function addProductAction(formData: FormData) {
   await requireAdminDb();
 
+  const thumbnail = formData.get("thumbnail") as string;
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const categoryId = formData.get("categoryId") ? parseInt(formData.get("categoryId") as string) : null;
@@ -54,16 +55,26 @@ export async function addProductAction(formData: FormData) {
     specs: [],
   }).returning({ id: products.id });
 
-  // Save uploaded images
+  // Save thumbnail first (sortOrder: 0), then additional media
+  const allMedia: { productId: number; publicId: string; type: "image" | "video"; sortOrder: number }[] = [];
+
+  if (thumbnail) {
+    allMedia.push({ productId: product.id, publicId: thumbnail, type: "image", sortOrder: 0 });
+  }
+
   if (mediaPublicIds.length > 0) {
-    await db.insert(productMedia).values(
-      mediaPublicIds.map((publicId, i) => ({
+    mediaPublicIds.forEach((publicId, i) => {
+      allMedia.push({
         productId: product.id,
         publicId,
         type: (mediaTypes[i] === "video" ? "video" : "image") as "image" | "video",
-        sortOrder: i,
-      }))
-    );
+        sortOrder: i + 1, // starts after thumbnail
+      });
+    });
+  }
+
+  if (allMedia.length > 0) {
+    await db.insert(productMedia).values(allMedia);
   }
 
   revalidatePath("/admin/products");

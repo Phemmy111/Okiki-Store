@@ -20,31 +20,62 @@ export default function AddProductForm({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [mediaItems, setMediaItems] = useState<{ publicId: string; type: "image" | "video" }[]>([]);
   const [priceMode, setPriceMode] = useState("show");
   const formRef = useRef<HTMLFormElement>(null);
 
-  const openWidget = () => {
+  // ── helpers ──────────────────────────────────────────────────────────────
+  const makeSignature = async (callback: Function, paramsToSign: any) => {
+    const res = await fetch("/api/cloudinary/sign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paramsToSign }),
+    });
+    const data = await res.json();
+    callback(data.signature);
+  };
+
+  // ── Thumbnail widget (single image) ──────────────────────────────────────
+  const openThumbnailWidget = () => {
     if (typeof window === "undefined" || !(window as any).cloudinary) {
       alert("Upload widget not ready yet. Wait a moment and try again.");
       return;
     }
-    const widget = (window as any).cloudinary.createUploadWidget(
+    (window as any).cloudinary.createUploadWidget(
       {
         cloudName,
-        uploadSignature: async (callback: Function, paramsToSign: any) => {
-          const res = await fetch("/api/cloudinary/sign", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ paramsToSign }),
-          });
-          const data = await res.json();
-          callback(data.signature);
-        },
+        uploadSignature: makeSignature,
+        apiKey,
+        resourceType: "image",
+        multiple: false,
+        maxFiles: 1,
+        sources: ["local", "url"],
+        cropping: true,
+        croppingAspectRatio: 1,
+      },
+      (error: any, result: any) => {
+        if (!error && result?.event === "success") {
+          setThumbnail(result.info.public_id);
+        }
+      }
+    ).open();
+  };
+
+  // ── Additional media widget (images + videos) ─────────────────────────────
+  const openMediaWidget = () => {
+    if (typeof window === "undefined" || !(window as any).cloudinary) {
+      alert("Upload widget not ready yet. Wait a moment and try again.");
+      return;
+    }
+    (window as any).cloudinary.createUploadWidget(
+      {
+        cloudName,
+        uploadSignature: makeSignature,
         apiKey,
         resourceType: "auto",
         multiple: true,
-        maxFiles: 10,
+        maxFiles: 15,
         sources: ["local", "url"],
       },
       (error: any, result: any) => {
@@ -53,8 +84,7 @@ export default function AddProductForm({
           setMediaItems((prev) => [...prev, { publicId: result.info.public_id, type }]);
         }
       }
-    );
-    widget.open();
+    ).open();
   };
 
   const removeMedia = (publicId: string) => {
@@ -65,12 +95,19 @@ export default function AddProductForm({
     e.preventDefault();
     if (!formRef.current) return;
     const fd = new FormData(formRef.current);
+    fd.set("thumbnail", thumbnail ?? "");
     fd.set("mediaPublicIds", mediaItems.map(m => m.publicId).join(","));
     fd.set("mediaTypes", mediaItems.map(m => m.type).join(","));
     startTransition(async () => {
       await addProductAction(fd);
     });
   };
+
+  // ── Cloudinary thumb/video URL builders ─────────────────────────────────
+  const thumbUrl = (publicId: string) =>
+    `https://res.cloudinary.com/${cloudName}/image/upload/w_300,h_300,c_fill,f_auto,q_auto/${publicId}`;
+  const videoThumb = (publicId: string) =>
+    `https://res.cloudinary.com/${cloudName}/video/upload/w_200,h_200,c_fill,so_0/${publicId}.jpg`;
 
   const inputCls = "w-full border border-border rounded-xl px-4 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-gold/50 bg-white";
   const labelCls = "block text-sm font-semibold text-navy mb-1";
@@ -81,7 +118,7 @@ export default function AddProductForm({
       <Script src="https://upload-widget.cloudinary.com/global/all.js" strategy="lazyOnload" />
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
 
-        {/* Basic Info */}
+        {/* ── Basic Info ─────────────────────────────────────────── */}
         <div className={sectionCls}>
           <h2 className="font-bold text-navy text-base border-b border-border pb-3">Basic Information</h2>
 
@@ -117,7 +154,85 @@ export default function AddProductForm({
           </div>
         </div>
 
-        {/* Pricing */}
+        {/* ── Thumbnail ──────────────────────────────────────────── */}
+        <div className={sectionCls}>
+          <h2 className="font-bold text-navy text-base border-b border-border pb-3">Product Thumbnail</h2>
+          <p className="text-xs text-text-muted -mt-2">This is the main cover image shown on product cards and the shop page. Upload one clear square image.</p>
+
+          <div className="flex items-start gap-6">
+            {/* Preview box */}
+            <div className="shrink-0 w-36 h-36 rounded-2xl border-2 border-dashed border-border overflow-hidden bg-page flex items-center justify-center relative">
+              {thumbnail ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={thumbUrl(thumbnail)} alt="Thumbnail" className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setThumbnail(null)}
+                    className="absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full text-xs flex items-center justify-center shadow"
+                  >✕</button>
+                </>
+              ) : (
+                <span className="text-3xl opacity-20">🖼️</span>
+              )}
+            </div>
+
+            <div className="flex-1 space-y-3">
+              <button
+                type="button"
+                onClick={openThumbnailWidget}
+                className="bg-navy text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-navy-mid transition-colors w-full"
+              >
+                {thumbnail ? "🔄 Change Thumbnail" : "📷 Upload Thumbnail"}
+              </button>
+              {thumbnail && (
+                <p className="text-xs text-green-600 font-medium">✔ Thumbnail uploaded</p>
+              )}
+              <p className="text-xs text-text-muted">Recommended: square image (1:1), min 600×600px. JPG or PNG.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Additional Media ───────────────────────────────────── */}
+        <div className={sectionCls}>
+          <h2 className="font-bold text-navy text-base border-b border-border pb-3">Additional Media</h2>
+          <p className="text-xs text-text-muted -mt-2">Upload more images and/or videos customers can browse on the product detail page. These are separate from the thumbnail.</p>
+
+          <button
+            type="button"
+            onClick={openMediaWidget}
+            className="bg-page border-2 border-dashed border-border hover:border-gold text-navy text-sm font-semibold rounded-xl px-6 py-4 w-full transition-colors"
+          >
+            📷🎥 Add Images & Videos
+          </button>
+
+          {mediaItems.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {mediaItems.map((item, i) => (
+                <div key={item.publicId} className="relative w-24 h-24 rounded-xl overflow-hidden border border-border group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.type === "video" ? videoThumb(item.publicId) : thumbUrl(item.publicId)}
+                    alt={`Media ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  {item.type === "video" && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                      <span className="text-white text-base">▶</span>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeMedia(item.publicId)}
+                    className="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >✕</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── Pricing ────────────────────────────────────────────── */}
         <div className={sectionCls}>
           <h2 className="font-bold text-navy text-base border-b border-border pb-3">Pricing</h2>
 
@@ -144,7 +259,7 @@ export default function AddProductForm({
           )}
         </div>
 
-        {/* Inventory */}
+        {/* ── Inventory ──────────────────────────────────────────── */}
         <div className={sectionCls}>
           <h2 className="font-bold text-navy text-base border-b border-border pb-3">Inventory</h2>
 
@@ -176,50 +291,7 @@ export default function AddProductForm({
           </div>
         </div>
 
-        {/* Media (Images + Videos) */}
-        <div className={sectionCls}>
-          <h2 className="font-bold text-navy text-base border-b border-border pb-3">Product Media</h2>
-          <p className="text-xs text-text-muted -mt-2">Upload images and/or videos. The first image will be the main thumbnail.</p>
-
-          <button type="button" onClick={openWidget} className="bg-page border-2 border-dashed border-border hover:border-gold text-navy text-sm font-semibold rounded-xl px-6 py-4 w-full transition-colors">
-            📷🎥 Upload Images & Videos (click to open uploader)
-          </button>
-
-          {mediaItems.length > 0 && (
-            <div className="flex flex-wrap gap-3 mt-2">
-              {mediaItems.map((item, i) => (
-                <div key={item.publicId} className="relative w-24 h-24 rounded-xl overflow-hidden border border-border group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.type === "video"
-                      ? `https://res.cloudinary.com/${cloudName}/video/upload/w_200,h_200,c_fill,so_0/${item.publicId}.jpg`
-                      : `https://res.cloudinary.com/${cloudName}/image/upload/w_200,h_200,c_fill/${item.publicId}`
-                    }
-                    alt={`Media ${i + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  {i === 0 && (
-                    <span className="absolute top-1 left-1 bg-gold text-navy text-[9px] font-bold px-1 py-0.5 rounded">MAIN</span>
-                  )}
-                  {item.type === "video" && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-                      <span className="text-white text-base">▶</span>
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => removeMedia(item.publicId)}
-                    className="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Flags */}
+        {/* ── Labels & Visibility ───────────────────────────────── */}
         <div className={sectionCls}>
           <h2 className="font-bold text-navy text-base border-b border-border pb-3">Labels & Visibility</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -242,7 +314,7 @@ export default function AddProductForm({
           </div>
         </div>
 
-        {/* Actions */}
+        {/* ── Actions ───────────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             type="submit"
