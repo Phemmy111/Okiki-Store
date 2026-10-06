@@ -1,8 +1,16 @@
 import { Metadata } from "next";
+import { db } from "@/db";
+import { brands } from "@/db/schema";
+import { requireAdminDb } from "@/lib/data/auth";
+import { desc } from "drizzle-orm";
+import AdminBrandsClient from "./client";
 
 export const metadata: Metadata = { title: "Brands | Admin" };
 
-export default function AdminBrandsPage() {
+export default async function AdminBrandsPage() {
+  await requireAdminDb();
+  const allBrands = await db.select().from(brands).orderBy(desc(brands.id));
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -15,9 +23,10 @@ export default function AdminBrandsPage() {
         </button>
       </div>
       
-      <div className="bg-white border border-border rounded-2xl shadow-sm p-10 text-center text-text-muted">
-        Brands management UI coming soon...
-      </div>
+      <AdminBrandsClient
+        brands={allBrands}
+        cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? ""}
+      />
     </div>
   );
 }
