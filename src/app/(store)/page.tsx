@@ -56,19 +56,19 @@ export default async function HomePage() {
           slot="home-hero" 
           defaults={HERO_DEFAULTS}
           overlayTop={
-            <div className="mb-6 inline-block bg-gold/10 text-gold text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-gold/20">
+            <span className="inline-block bg-gold/20 text-gold text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-gold/30">
               Dugbe Alawo, Ibadan
-            </div>
+            </span>
           }
           overlayBottom={
             <>
-              <p className="text-white/80 text-lg md:text-xl max-w-2xl mb-10 drop-shadow mt-4">
+              <p className="text-white/70 text-lg max-w-xl mx-auto mb-8 leading-relaxed mt-5">
                 Your one-stop shop for salon & beauty equipment, home electronics, generators, and creator gear in Ibadan, Nigeria.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4 pointer-events-auto">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pointer-events-auto">
                 <Link
                   href="/shop"
-                  className="bg-gold hover:bg-gold-light text-navy font-bold px-8 py-3.5 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                  className="bg-gold hover:bg-gold-light text-navy font-bold px-8 py-3.5 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
                 >
                   Shop Now
                 </Link>
@@ -76,7 +76,7 @@ export default async function HomePage() {
                   href={`https://wa.me/${waNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border-2 border-white/40 hover:border-gold hover:text-gold text-white font-bold px-8 py-3.5 rounded-full transition-all duration-200 backdrop-blur-sm"
+                  className="border border-white/30 hover:border-gold hover:text-gold text-white font-bold px-8 py-3.5 rounded-full transition-all duration-200 focus-visible:ring-2 focus-visible:ring-white"
                 >
                   Chat on WhatsApp
                 </a>
@@ -85,12 +85,8 @@ export default async function HomePage() {
           }
         />
         
-        {/* SVG Curve overlapping the next section */}
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-40 pointer-events-none transform translate-y-px">
-          <svg className="relative block w-full h-[50px] md:h-[80px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path d="M0,0V73.23C200,105.12,400,120,600,120s400-14.88,600-46.77V0Z" className="fill-page"></path>
-          </svg>
-        </div>
+        {/* Bottom wave */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-page" style={{ clipPath: "ellipse(55% 100% at 50% 100%)" }} aria-hidden />
       </section>
 
       {/* ── SHOP BY CATEGORY ────────────────────────────────────────────────── */}

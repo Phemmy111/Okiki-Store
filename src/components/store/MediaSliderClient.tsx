@@ -159,7 +159,7 @@ export default function MediaSliderClient({
   /* ------------- Text position per layout ------------- */
   const textPosCls =
     layout === "hero"
-      ? "items-center text-center justify-center pt-12 md:pt-20 px-4"
+      ? "items-center text-center justify-center py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
       : layout === "tile" || layout === "card"
       ? "justify-end items-center text-center p-4"
       : "justify-end items-start text-left pb-10 px-6 md:px-12";
@@ -218,18 +218,18 @@ export default function MediaSliderClient({
               initial="hidden"
               animate="show"
               exit="exit"
-              className="flex flex-col gap-3"
+              className="flex flex-col"
             >
               {resolved.headline && (
                 <div className="overflow-hidden">
                   <motion.h2
                     variants={shouldReduceMotion ? reducedVariant : textLine}
-                    className={`font-display font-bold text-white leading-tight drop-shadow-lg ${
+                    className={`font-display font-bold text-white leading-tight text-balance ${
                       layout === "hero"
-                        ? "text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
+                        ? "text-4xl sm:text-5xl md:text-6xl mb-5"
                         : layout === "banner"
-                        ? "text-2xl md:text-4xl"
-                        : "text-xl md:text-2xl"
+                        ? "text-2xl md:text-4xl drop-shadow-lg"
+                        : "text-xl md:text-2xl drop-shadow-lg"
                     }`}
                   >
                     {/* Gold-highlight word parsing: wrap "Reliable" in gold */}
