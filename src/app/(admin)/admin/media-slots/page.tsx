@@ -12,8 +12,7 @@ export default async function AdminMediaSlotsPage({
   const { slotId } = await searchParams;
   const slots = await getAllMediaSlots();
 
-  // Default to the first slot if none selected
-  const activeSlotId = slotId ? parseInt(slotId) : slots[0]?.id;
+  const activeSlotId = slotId ? parseInt(slotId) : null;
 
   const slides =
     activeSlotId && !isNaN(activeSlotId)
@@ -21,14 +20,14 @@ export default async function AdminMediaSlotsPage({
       : [];
 
   const activeSlot =
-    slots.find((s) => s.id === activeSlotId) ?? slots[0] ?? null;
+    slots.find((s) => s.id === activeSlotId) ?? null;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-navy mb-2">Media Slots Manager</h1>
         <p className="text-sm text-text-secondary">
-          Manage backgrounds, videos, and custom headline text for specific areas of the storefront.
+          Manage animated sliders for the homepage and individual category pages.
         </p>
       </div>
 

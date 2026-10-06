@@ -136,6 +136,30 @@ export default function MediaManagerClient({
     return `https://res.cloudinary.com/${cloudName}/image/upload/w_300,h_200,c_fill/${slide.publicId}`;
   }
 
+  if (!activeSlot) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {slots.map((slot) => (
+          <div key={slot.id} className="bg-white border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between items-start">
+            <div>
+              <h3 className="font-bold text-navy mb-1">{slot.label}</h3>
+              <div className="flex items-center gap-2 text-xs text-text-muted mb-4">
+                <span className="bg-page px-2 py-0.5 rounded border border-border">{slot.layout}</span>
+                <span>{slot.defaultDurationMs / 1000}s {slot.defaultTransition}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => router.push(`?slotId=${slot.id}`)}
+              className="text-sm font-semibold text-gold bg-gold/10 px-4 py-2 rounded-lg hover:bg-gold/20 transition-colors w-full text-center"
+            >
+              Configure Slider
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <>
       <Script src="https://upload-widget.cloudinary.com/global/all.js" strategy="lazyOnload" />
@@ -146,7 +170,7 @@ export default function MediaManagerClient({
           {/* Card header */}
           <div className="px-6 py-5 border-b border-border flex items-center justify-between">
             <div>
-              <h2 className="font-bold text-navy text-lg">Configure Slider</h2>
+              <h2 className="font-bold text-navy text-lg">Configure Slider: {activeSlot.label}</h2>
               <p className="text-xs text-text-muted mt-0.5">Set the target slot, transition style, and timing</p>
             </div>
           </div>
