@@ -78,7 +78,7 @@ export default async function ShopPage({
               <ul className="space-y-1">
                 <li>
                   <Link
-                    href={buildUrl({ category: undefined, page: "1" })}
+                    href="/shop"
                     className={`block text-sm px-2 py-1.5 rounded-lg transition-colors ${
                       !categorySlug ? "bg-navy text-white font-semibold" : "text-text-secondary hover:text-navy hover:bg-page"
                     }`}
@@ -89,7 +89,7 @@ export default async function ShopPage({
                 {categories.map((cat) => (
                   <li key={cat.id}>
                     <Link
-                      href={buildUrl({ category: cat.slug, page: "1" })}
+                      href={`/categories/${cat.slug}`}
                       className={`block text-sm px-2 py-1.5 rounded-lg transition-colors ${
                         categorySlug === cat.slug ? "bg-navy text-white font-semibold" : "text-text-secondary hover:text-navy hover:bg-page"
                       }`}
