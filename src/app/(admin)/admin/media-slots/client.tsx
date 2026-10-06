@@ -125,10 +125,19 @@ export default function MediaManagerClient({
                 <div key={slide.id} className="flex gap-4 items-center p-4 bg-page rounded-xl border border-border">
                   <div className="w-24 h-24 shrink-0 bg-black/5 rounded-lg overflow-hidden flex items-center justify-center relative">
                      {slide.mediaType === "video" ? (
-                       <span className="text-xs font-bold bg-black/60 text-white px-2 py-1 rounded absolute">VIDEO</span>
+                       <>
+                         {/* eslint-disable-next-line @next/next/no-img-element */}
+                         <img
+                           src={`https://res.cloudinary.com/${cloudName}/video/upload/w_200,h_200,c_fill,so_0/${slide.publicId}.jpg`}
+                           alt="video thumbnail"
+                           className="w-full h-full object-cover"
+                           onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                         />
+                         <span className="text-[10px] font-bold bg-black/60 text-white px-1.5 py-0.5 rounded absolute bottom-1 left-1">▶ VIDEO</span>
+                       </>
                      ) : (
                        // eslint-disable-next-line @next/next/no-img-element
-                       <img src={`https://res.cloudinary.com/${cloudName}/image/upload/w_200,c_fill/${slide.publicId}`} alt="thumb" className="w-full h-full object-cover" />
+                       <img src={`https://res.cloudinary.com/${cloudName}/image/upload/w_200,h_200,c_fill/${slide.publicId}`} alt="thumb" className="w-full h-full object-cover" />
                      )}
                   </div>
                   
