@@ -62,7 +62,7 @@ export default async function HomePage() {
           }
           overlayBottom={
             <>
-              <p className="text-white/70 text-lg max-w-xl mx-auto mb-8 leading-relaxed mt-5">
+              <p className="text-white/70 text-base sm:text-lg max-w-xl mx-auto px-4 sm:px-0 mb-8 leading-relaxed mt-5">
                 Your one-stop shop for salon & beauty equipment, home electronics, generators, and creator gear in Ibadan, Nigeria.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center pointer-events-auto">

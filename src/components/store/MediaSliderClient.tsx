@@ -67,11 +67,33 @@ const textContainer = {
   exit: { transition: { staggerChildren: 0.06 } },
 };
 
-const textLine = {
-  hidden: { y: "110%", opacity: 0 },
-  show:   { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
-  exit:   { y: "-60%", opacity: 0, transition: { duration: 0.4, ease: "easeIn" } },
-};
+// Cycle through different animations for the headline
+const dynamicHeadlineVariants = [
+  // 0: Slide Up
+  {
+    hidden: { y: 40, opacity: 0 },
+    show:   { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+    exit:   { y: -20, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } },
+  },
+  // 1: Fade & Scale
+  {
+    hidden: { scale: 0.9, opacity: 0, filter: "blur(4px)" },
+    show:   { scale: 1, opacity: 1, filter: "blur(0px)", transition: { duration: 0.8, ease: "easeOut" } },
+    exit:   { scale: 1.05, opacity: 0, transition: { duration: 0.4 } },
+  },
+  // 2: Slide from Left
+  {
+    hidden: { x: -40, opacity: 0 },
+    show:   { x: 0, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } },
+    exit:   { x: 40, opacity: 0, transition: { duration: 0.4, ease: "easeIn" } },
+  },
+  // 3: Blur Reveal
+  {
+    hidden: { opacity: 0, filter: "blur(10px)", y: -10 },
+    show:   { opacity: 1, filter: "blur(0px)", y: 0, transition: { duration: 1, ease: "easeOut" } },
+    exit:   { opacity: 0, filter: "blur(10px)", transition: { duration: 0.4 } },
+  }
+];
 
 const subtextVariant = {
   hidden: { opacity: 0, filter: "blur(6px)" },
@@ -140,7 +162,7 @@ export default function MediaSliderClient({
   const resolved = resolveSlideText(currentSlide, currentIndex);
 
   const containerCls = {
-    hero:   "aspect-[16/9] md:aspect-[21/9] min-h-[400px]",
+    hero:   "aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] min-h-[550px] sm:min-h-[400px]",
     banner: "aspect-[3/1] md:aspect-[4/1] min-h-[200px]",
     tile:   "aspect-square",
     card:   "aspect-[4/5]",
@@ -159,10 +181,12 @@ export default function MediaSliderClient({
   /* ------------- Text position per layout ------------- */
   const textPosCls =
     layout === "hero"
-      ? "items-center text-center justify-center py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
+      ? "items-center text-center justify-center py-16 md:py-28 px-6 sm:px-12 lg:px-16 max-w-5xl mx-auto"
       : layout === "tile" || layout === "card"
       ? "justify-end items-center text-center p-4"
       : "justify-end items-start text-left pb-10 px-6 md:px-12";
+
+  const headlineAnimation = dynamicHeadlineVariants[currentIndex % dynamicHeadlineVariants.length];
 
   return (
     <div
@@ -218,15 +242,15 @@ export default function MediaSliderClient({
               initial="hidden"
               animate="show"
               exit="exit"
-              className="flex flex-col"
+              className="flex flex-col w-full"
             >
               {resolved.headline && (
                 <div className="overflow-hidden">
                   <motion.h2
-                    variants={shouldReduceMotion ? reducedVariant : textLine}
-                    className={`font-display font-bold text-white leading-tight text-balance ${
+                    variants={shouldReduceMotion ? reducedVariant : headlineAnimation}
+                    className={`font-display font-bold text-white leading-tight text-balance mx-auto w-full px-2 sm:px-0 ${
                       layout === "hero"
-                        ? "text-4xl sm:text-5xl md:text-6xl mb-5"
+                        ? "text-[1.75rem] leading-[1.15] sm:text-5xl md:text-6xl mb-4 sm:mb-5"
                         : layout === "banner"
                         ? "text-2xl md:text-4xl drop-shadow-lg"
                         : "text-xl md:text-2xl drop-shadow-lg"
