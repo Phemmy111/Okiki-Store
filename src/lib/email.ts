@@ -10,6 +10,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://okiki-store.vercel.app";
+
 export async function sendQuoteNotificationEmail(
   toEmails: string[],
   customerDetails: { name: string; phone: string; businessName: string | null; message: string | null },
@@ -22,27 +24,112 @@ export async function sendQuoteNotificationEmail(
   }
 
   const itemsHtml = items
-    .map((item) => `<li><strong>${item.qty}x</strong> ${item.name}</li>`)
+    .map(
+      (item) => `
+      <tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#333;">${item.name}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#333;text-align:center;">${item.qty}</td>
+      </tr>`
+    )
     .join("");
 
   const html = `
-    <h2>New Quote Request (ID: #${quoteId})</h2>
-    <p>A new quote request has been submitted on OKIKI Store.</p>
-    
-    <h3>Customer Details</h3>
-    <ul>
-      <li><strong>Name:</strong> ${customerDetails.name}</li>
-      <li><strong>Phone:</strong> ${customerDetails.phone}</li>
-      ${customerDetails.businessName ? `<li><strong>Business:</strong> ${customerDetails.businessName}</li>` : ""}
-      ${customerDetails.message ? `<li><strong>Message:</strong> ${customerDetails.message}</li>` : ""}
-    </ul>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>New Quote Request</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f7;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
 
-    <h3>Requested Items</h3>
-    <ul>
-      ${itemsHtml}
-    </ul>
+          <!-- Header with logo -->
+          <tr>
+            <td style="background:#0a1628;padding:24px 32px;text-align:center;">
+              <img
+                src="${APP_URL}/brand/logo.jpg"
+                alt="OKIKI Electronics Store"
+                width="100"
+                style="height:auto;display:inline-block;border-radius:8px;"
+              />
+              <p style="color:#c9a84c;font-size:13px;margin:8px 0 0;letter-spacing:1px;text-transform:uppercase;">Admin Notification</p>
+            </td>
+          </tr>
 
-    <p>Log in to the <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://okiki-store.vercel.app"}/admin/quotes">Admin Dashboard</a> to view and manage this quote.</p>
+          <!-- Alert banner -->
+          <tr>
+            <td style="background:#c9a84c;padding:12px 32px;text-align:center;">
+              <p style="margin:0;color:#0a1628;font-weight:bold;font-size:15px;">🛒 New Quote Request — #${quoteId}</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 24px;font-size:15px;color:#444;">A new quote request has been submitted on the OKIKI Store website.</p>
+
+              <!-- Customer details -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:8px;overflow:hidden;margin-bottom:24px;">
+                <tr>
+                  <td colspan="2" style="background:#f8f8fa;padding:10px 16px;font-size:12px;font-weight:bold;color:#888;letter-spacing:0.5px;text-transform:uppercase;">Customer Details</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 16px;font-size:14px;color:#888;border-top:1px solid #f0f0f0;width:35%;">Name</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#222;border-top:1px solid #f0f0f0;font-weight:600;">${customerDetails.name}</td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 16px;font-size:14px;color:#888;border-top:1px solid #f0f0f0;">Phone</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#222;border-top:1px solid #f0f0f0;font-weight:600;">${customerDetails.phone}</td>
+                </tr>
+                ${customerDetails.businessName ? `
+                <tr>
+                  <td style="padding:10px 16px;font-size:14px;color:#888;border-top:1px solid #f0f0f0;">Business</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#222;border-top:1px solid #f0f0f0;">${customerDetails.businessName}</td>
+                </tr>` : ""}
+                ${customerDetails.message ? `
+                <tr>
+                  <td style="padding:10px 16px;font-size:14px;color:#888;border-top:1px solid #f0f0f0;vertical-align:top;">Message</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#222;border-top:1px solid #f0f0f0;">${customerDetails.message}</td>
+                </tr>` : ""}
+              </table>
+
+              <!-- Items table -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e8e8e8;border-radius:8px;overflow:hidden;margin-bottom:32px;">
+                <tr>
+                  <td style="background:#f8f8fa;padding:10px 12px;font-size:12px;font-weight:bold;color:#888;letter-spacing:0.5px;text-transform:uppercase;">Product</td>
+                  <td style="background:#f8f8fa;padding:10px 12px;font-size:12px;font-weight:bold;color:#888;letter-spacing:0.5px;text-transform:uppercase;text-align:center;">Qty</td>
+                </tr>
+                ${itemsHtml}
+              </table>
+
+              <!-- CTA -->
+              <div style="text-align:center;">
+                <a href="${APP_URL}/admin/quotes"
+                  style="display:inline-block;background:#0a1628;color:#ffffff;font-weight:bold;font-size:15px;padding:14px 36px;border-radius:50px;text-decoration:none;">
+                  View in Admin Dashboard
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f8f8fa;padding:20px 32px;text-align:center;border-top:1px solid #efefef;">
+              <p style="margin:0;font-size:12px;color:#aaa;">OKIKI Electronics Store &bull; Ibadan, Nigeria</p>
+              <p style="margin:4px 0 0;font-size:12px;color:#aaa;">This is an automated notification. Do not reply to this email.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
   `;
 
   const text = `
@@ -56,16 +143,16 @@ ${customerDetails.businessName ? `- Business: ${customerDetails.businessName}` :
 ${customerDetails.message ? `- Message: ${customerDetails.message}` : ""}
 
 Requested Items:
-${items.map(item => `- ${item.qty}x ${item.name}`).join("\n")}
+${items.map((item) => `- ${item.qty}x ${item.name}`).join("\n")}
 
-Log in to the Admin Dashboard to view and manage this quote:
-${process.env.NEXT_PUBLIC_APP_URL || "https://okiki-store.vercel.app"}/admin/quotes
+View in Admin Dashboard:
+${APP_URL}/admin/quotes
   `;
 
   await transporter.sendMail({
     from: `"OKIKI Store" <${process.env.SMTP_USER}>`,
     to: toEmails,
-    subject: `New Quote Request from ${customerDetails.name}`,
+    subject: `🛒 New Quote Request from ${customerDetails.name} — #${quoteId}`,
     html,
     text,
   });
