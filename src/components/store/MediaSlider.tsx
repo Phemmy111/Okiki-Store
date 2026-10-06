@@ -29,8 +29,12 @@ export interface SlotDefaults {
 
 export interface MediaSliderProps {
   slot: string;
-  /** Text content to show OVER the media background. Always rendered, even in fallback. */
+  /** Legacy overlay (fills inset-0) */
   children?: ReactNode;
+  /** Static content to show above the animated headline (Hero only) */
+  overlayTop?: ReactNode;
+  /** Static content to show below the animated headline (Hero only) */
+  overlayBottom?: ReactNode;
   /** Per-slide default text. If a slide has no headline/subtext/btn, these are used. */
   defaults?: SlotDefaults[];
   className?: string;
@@ -39,6 +43,8 @@ export interface MediaSliderProps {
 export default async function MediaSlider({
   slot,
   children,
+  overlayTop,
+  overlayBottom,
   defaults,
   className,
 }: MediaSliderProps) {
@@ -51,6 +57,8 @@ export default async function MediaSlider({
       fallbackSrc={fallback?.src ?? "/fallbacks/hero-salon.webp"}
       fallbackAlt={fallback?.alt ?? "OKIKI Store"}
       defaults={defaults}
+      overlayTop={overlayTop}
+      overlayBottom={overlayBottom}
       className={className}
     >
       {children}

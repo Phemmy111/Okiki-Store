@@ -46,6 +46,8 @@ interface Props {
   fallbackSrc: string;
   fallbackAlt: string;
   defaults?: SlotDefaults[];
+  overlayTop?: ReactNode;
+  overlayBottom?: ReactNode;
   children?: ReactNode;
   className?: string;
 }
@@ -95,6 +97,8 @@ export default function MediaSliderClient({
   fallbackSrc,
   fallbackAlt,
   defaults,
+  overlayTop,
+  overlayBottom,
   children,
   className,
 }: Props) {
@@ -155,10 +159,10 @@ export default function MediaSliderClient({
   /* ------------- Text position per layout ------------- */
   const textPosCls =
     layout === "hero"
-      ? "items-center text-center pb-24 px-6 md:px-12"
+      ? "items-center text-center justify-center pt-12 md:pt-20 px-4"
       : layout === "tile" || layout === "card"
-      ? "items-center text-center p-4"
-      : "items-start text-left pb-10 px-6 md:px-12";
+      ? "justify-end items-center text-center p-4"
+      : "justify-end items-start text-left pb-10 px-6 md:px-12";
 
   return (
     <div
@@ -203,8 +207,10 @@ export default function MediaSliderClient({
       <div className={`absolute inset-0 pointer-events-none ${gradientCls}`} />
 
       {/* ── SLIDE TEXT (headline / subtext / btn from slide or defaults) ─────── */}
-      {(resolved.headline || resolved.subtext || resolved.btnLabel) && (
-        <div className={`absolute inset-0 flex flex-col justify-end z-10 ${textPosCls}`}>
+      {(resolved.headline || resolved.subtext || resolved.btnLabel || overlayTop || overlayBottom) && (
+        <div className={`absolute inset-0 flex flex-col z-10 ${textPosCls}`}>
+          {overlayTop}
+          
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -274,6 +280,7 @@ export default function MediaSliderClient({
               )}
             </motion.div>
           </AnimatePresence>
+          {overlayBottom}
         </div>
       )}
 

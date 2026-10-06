@@ -13,36 +13,11 @@ export const metadata: Metadata = { title: "Home" };
 
 /* ── Hero per-slide text defaults ────────────────────────────────────────── */
 const HERO_DEFAULTS = [
-  {
-    headline: "Okiki Electronic Store. Quality Products. Reliable Service.",
-    subtext: "Your one-stop shop for salon & beauty equipment, home electronics, generators, and creator gear in Nigeria.",
-    btnLabel: "Shop Now",
-    btnUrl: "/shop",
-  },
-  {
-    headline: "Equip your salon from the first chair to the last mirror.",
-    subtext: "Salon chairs, dryers, wash basins, styling mirrors and more.",
-    btnLabel: "Shop Salon & Beauty",
-    btnUrl: "/categories/salon-beauty",
-  },
-  {
-    headline: "Top-tier Electronics for a Modern Home.",
-    subtext: "Discover the best TVs, refrigerators, and home appliances at Okiki Electronic Store.",
-    btnLabel: "Shop Electronics",
-    btnUrl: "/categories/home-electronics",
-  },
-  {
-    headline: "Power for your home and business.",
-    subtext: "Generators, inverters, and power solutions you can trust.",
-    btnLabel: "Shop Power & Generators",
-    btnUrl: "/categories/power-generators",
-  },
-  {
-    headline: "Light up your content with Premium Gear.",
-    subtext: "Ring lights, phone tripod stands and creator accessories.",
-    btnLabel: "Shop Creator Gear",
-    btnUrl: "/categories/creator-gear",
-  },
+  { headline: "Quality Products. Reliable Service. Trusted Dealer." },
+  { headline: "Equip your salon from the first chair to the last mirror." },
+  { headline: "Top-tier Electronics for a Modern Home." },
+  { headline: "Power for your home and business." },
+  { headline: "Light up your content with Premium Gear." },
 ];
 
 /* ── Category tile content ───────────────────────────────────────────────── */
@@ -77,35 +52,43 @@ export default async function HomePage() {
     <>
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
       <section aria-label="Welcome to OKIKI Electronics Store" className="relative">
-        <MediaSlider slot="home-hero" defaults={HERO_DEFAULTS}>
-          {/* Static Overlay content (Pill + Buttons) */}
-          <div className="pointer-events-auto absolute inset-0 flex flex-col items-center justify-end pb-32 px-4 z-30">
-            <span className="mb-6 inline-block bg-gold/20 text-gold text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full border border-gold/30 backdrop-blur-sm shadow-sm">
-              {cityLabel}
-            </span>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/shop"
-                className="bg-gold hover:bg-gold-light text-navy font-bold px-8 py-3.5 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-              >
-                Shop Now
-              </Link>
-              <a
-                href={`https://wa.me/${waNumber}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-2 border-white/40 hover:border-gold hover:text-gold text-white font-bold px-8 py-3.5 rounded-full transition-all duration-200 backdrop-blur-sm"
-              >
-                Chat on WhatsApp
-              </a>
+        <MediaSlider 
+          slot="home-hero" 
+          defaults={HERO_DEFAULTS}
+          overlayTop={
+            <div className="mb-6 inline-block bg-gold/10 text-gold text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full border border-gold/20">
+              Dugbe Alawo, Ibadan
             </div>
-          </div>
-        </MediaSlider>
+          }
+          overlayBottom={
+            <>
+              <p className="text-white/80 text-lg md:text-xl max-w-2xl mb-10 drop-shadow mt-4">
+                Your one-stop shop for salon & beauty equipment, home electronics, generators, and creator gear in Ibadan, Nigeria.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-4 pointer-events-auto">
+                <Link
+                  href="/shop"
+                  className="bg-gold hover:bg-gold-light text-navy font-bold px-8 py-3.5 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                >
+                  Shop Now
+                </Link>
+                <a
+                  href={`https://wa.me/${waNumber}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border-2 border-white/40 hover:border-gold hover:text-gold text-white font-bold px-8 py-3.5 rounded-full transition-all duration-200 backdrop-blur-sm"
+                >
+                  Chat on WhatsApp
+                </a>
+              </div>
+            </>
+          }
+        />
         
         {/* SVG Curve overlapping the next section */}
-        <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none z-40 pointer-events-none transform translate-y-px">
-          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="block w-full h-10 md:h-20 lg:h-28 text-page fill-current">
-            <path d="M0,120 Q600,0 1200,120 Z" />
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-40 pointer-events-none transform translate-y-px">
+          <svg className="relative block w-full h-[50px] md:h-[80px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,0V73.23C200,105.12,400,120,600,120s400-14.88,600-46.77V0Z" className="fill-page"></path>
           </svg>
         </div>
       </section>
