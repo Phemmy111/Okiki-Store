@@ -218,33 +218,52 @@ export default async function HomePage() {
       <InfiniteTrustStrip />
 
       {/* ── VISIT OUR STORE ──────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
-        <MediaSlider slot="visit-us" className="rounded-3xl shadow-xl overflow-hidden group">
-          <div className="absolute inset-0 z-20 flex flex-col md:flex-row items-center justify-center p-8 md:p-16 bg-black/60 md:bg-black/50 backdrop-blur-[2px]">
-            <div className="text-center">
-              <p className="text-white/80 font-semibold tracking-widest uppercase text-sm mb-2 drop-shadow">
-                Visit Us In-Store
-              </p>
-              <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-                OKIKI Electronics Store
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="bg-gold-pale border border-gold/20 rounded-3xl p-8 md:p-12">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-navy mb-4">
+                Visit Our Store
               </h2>
-              
-              <div className="inline-flex flex-col items-center gap-4">
+              <p className="text-text-secondary mb-2">
+                📍{" "}
+                <span className="font-medium text-navy">
+                  {storeAddress}
+                </span>
+              </p>
+              <p className="text-text-secondary text-sm mb-6">
+                We are open Mon–Sat. Walk in or call ahead.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href={`tel:${phone1}`}
+                  className="flex items-center justify-center gap-2 bg-navy hover:bg-navy-mid text-white font-semibold px-5 py-3 rounded-full transition-colors"
+                >
+                  📞 {phone1}
+                </a>
+                <a
+                  href={`tel:${phone2}`}
+                  className="flex items-center justify-center gap-2 bg-navy hover:bg-navy-mid text-white font-semibold px-5 py-3 rounded-full transition-colors"
+                >
+                  📞 {phone2}
+                </a>
+              </div>
+            </div>
+            <div className="rounded-2xl overflow-hidden aspect-video relative flex items-center justify-center bg-navy/5">
+              <MediaSlider slot="visit-us" className="absolute inset-0 w-full h-full" />
+              <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center pointer-events-none">
                 <a
                   href={`https://maps.google.com/?q=${encodeURIComponent(storeAddress)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white hover:bg-page text-navy font-bold px-8 py-4 rounded-full transition-transform hover:scale-105 shadow-xl flex items-center gap-2"
+                  className="text-white hover:text-gold text-sm font-semibold hover:underline bg-navy/80 px-4 py-2 rounded-full backdrop-blur-sm pointer-events-auto shadow-lg"
                 >
                   Open in Google Maps →
                 </a>
-                <p className="text-white/90 text-sm md:text-base font-medium drop-shadow-md max-w-md mx-auto mt-2">
-                  📍 {storeAddress}
-                </p>
               </div>
             </div>
           </div>
-        </MediaSlider>
+        </div>
       </section>
 
       <div className="h-16 md:h-0" aria-hidden />
