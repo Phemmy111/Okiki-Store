@@ -45,10 +45,28 @@ export async function sendQuoteNotificationEmail(
     <p>Log in to the <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://okiki-store.vercel.app"}/admin/quotes">Admin Dashboard</a> to view and manage this quote.</p>
   `;
 
+  const text = `
+New Quote Request (ID: #${quoteId})
+A new quote request has been submitted on OKIKI Store.
+
+Customer Details:
+- Name: ${customerDetails.name}
+- Phone: ${customerDetails.phone}
+${customerDetails.businessName ? `- Business: ${customerDetails.businessName}` : ""}
+${customerDetails.message ? `- Message: ${customerDetails.message}` : ""}
+
+Requested Items:
+${items.map(item => `- ${item.qty}x ${item.name}`).join("\n")}
+
+Log in to the Admin Dashboard to view and manage this quote:
+${process.env.NEXT_PUBLIC_APP_URL || "https://okiki-store.vercel.app"}/admin/quotes
+  `;
+
   await transporter.sendMail({
     from: `"OKIKI Store" <${process.env.SMTP_USER}>`,
     to: toEmails,
     subject: `New Quote Request from ${customerDetails.name}`,
     html,
+    text,
   });
 }
