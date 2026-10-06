@@ -1,5 +1,5 @@
-import { db } from "../db";
-import { mediaSlots, slides } from "../db/schema";
+import { db } from "@/db";
+import { mediaSlots, slides } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
 import { requireAdminDb } from "./auth";
 

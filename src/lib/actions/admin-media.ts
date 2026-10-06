@@ -1,9 +1,9 @@
 "use server";
 
-import { db } from "../db";
-import { slides } from "../db/schema";
+import { db } from "@/db";
+import { slides } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { requireAdminDb } from "../data/auth";
+import { requireAdminDb } from "@/lib/data/auth";
 import { revalidatePath } from "next/cache";
 
 export async function createSlide(data: any) {

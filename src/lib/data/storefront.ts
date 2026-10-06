@@ -10,7 +10,7 @@ import {
   slides,
   settings,
 } from "@/db/schema";
-import { eq, and, desc, asc, inArray, isNull, sql } from "drizzle-orm";
+import { eq, and, desc, asc, inArray, ilike, count, gte, lte, or } from "drizzle-orm";
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────────
 export async function getStoreSettings() {
@@ -118,6 +118,88 @@ export async function getAllProducts(limit = 48) {
     .select()
     .from(products)
     .where(eq(products.isPublished, true))
+    .orderBy(desc(products.id))
+    .limit(limit);
+
+  return attachPrimaryMedia(prods);
+}
+
+// ── SHOP PAGE (paginated + filtered) ─────────────────────────────────────────
+export async function getShopProducts({
+  page = 1,
+  perPage = 24,
+  categorySlug,
+  minPrice,
+  maxPrice,
+  q,
+}: {
+  page?: number;
+  perPage?: number;
+  categorySlug?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  q?: string;
+}) {
+  const conditions: any[] = [eq(products.isPublished, true)];
+
+  // Filter by category slug
+  if (categorySlug) {
+    const cat = await db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(eq(categories.slug, categorySlug))
+      .limit(1);
+    if (cat.length) conditions.push(eq(products.categoryId, cat[0].id));
+  }
+
+  // Search query
+  if (q) {
+    conditions.push(
+      or(
+        ilike(products.name, `%${q}%`),
+        ilike(products.description, `%${q}%`)
+      )
+    );
+  }
+
+  // Price filters (stored in kobo, user provides naira)
+  if (minPrice) conditions.push(gte(products.priceKobo, minPrice * 100));
+  if (maxPrice) conditions.push(lte(products.priceKobo, maxPrice * 100));
+
+  const where = conditions.length === 1 ? conditions[0] : and(...conditions);
+
+  const [totalRow] = await db
+    .select({ total: count() })
+    .from(products)
+    .where(where);
+
+  const prods = await db
+    .select()
+    .from(products)
+    .where(where)
+    .orderBy(desc(products.id))
+    .limit(perPage)
+    .offset((page - 1) * perPage);
+
+  const items = await attachPrimaryMedia(prods);
+  return { items, total: totalRow.total, page, perPage };
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+export async function searchProducts(q: string, limit = 24) {
+  if (!q.trim()) return [];
+  const prods = await db
+    .select()
+    .from(products)
+    .where(
+      and(
+        eq(products.isPublished, true),
+        or(
+          ilike(products.name, `%${q}%`),
+          ilike(products.description, `%${q}%`)
+        )
+      )
+    )
     .orderBy(desc(products.id))
     .limit(limit);
 

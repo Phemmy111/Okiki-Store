@@ -65,20 +65,21 @@ export default function Header() {
             />
           </Link>
 
-          {/* Search — desktop only (Phase 3 wires up suggestions) */}
+          {/* Search — desktop */}
           <div className="flex-1 max-w-xl mx-auto hidden md:block">
-            <div className="relative">
+            <form method="GET" action="/search" className="relative">
               <Search
                 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none"
                 aria-hidden
               />
               <input
                 type="search"
+                name="q"
                 placeholder="Search products…"
                 aria-label="Search products"
                 className="w-full pl-10 pr-4 py-2.5 rounded-full border border-border bg-page text-sm focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent transition"
               />
-            </div>
+            </form>
           </div>
 
           {/* Right side actions */}
@@ -163,18 +164,19 @@ export default function Header() {
         <div className="md:hidden bg-white border-t border-border">
           {/* Mobile search */}
           <div className="px-4 py-3 border-b border-border">
-            <div className="relative">
+            <form method="GET" action="/search" className="relative">
               <Search
                 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted"
                 aria-hidden
               />
               <input
                 type="search"
+                name="q"
                 placeholder="Search products…"
                 aria-label="Search products"
                 className="w-full pl-10 pr-4 py-2.5 rounded-full border border-border bg-page text-sm focus:outline-none focus:ring-2 focus:ring-gold"
               />
-            </div>
+            </form>
           </div>
 
           {/* Mobile nav links */}
