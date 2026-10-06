@@ -27,7 +27,7 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-page flex">
       {/* ── Sidebar ── */}
-      <aside className="hidden md:flex md:flex-col w-56 lg:w-64 bg-navy text-white shrink-0">
+      <aside className="hidden md:flex md:flex-col w-56 lg:w-64 bg-navy text-white shrink-0 sticky top-0 h-screen">
         {/* Brand */}
         <div className="px-5 py-5 border-b border-white/10">
           <Link href="/" className="block">
