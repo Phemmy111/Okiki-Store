@@ -46,5 +46,31 @@ export async function submitQuoteAction(formData: FormData) {
     }))
   );
 
+  // Send email notification to super admins
+  try {
+    const { sendQuoteNotificationEmail } = await import("@/lib/email");
+    const { admins } = await import("@/db/schema");
+    const { eq } = await import("drizzle-orm");
+
+    const superAdmins = await db
+      .select({ email: admins.email })
+      .from(admins)
+      .where(eq(admins.role, "super_admin"));
+
+    const emails = superAdmins.map((a) => a.email);
+    
+    if (emails.length > 0) {
+      await sendQuoteNotificationEmail(
+        emails,
+        { name, phone, businessName, message },
+        items.map((i) => ({ name: i.productNameSnapshot, qty: i.qty })),
+        inserted.id
+      );
+    }
+  } catch (error) {
+    console.error("Failed to send quote notification email:", error);
+    // don't fail the quote submission if email fails
+  }
+
   return { success: true, quoteId: inserted.id };
 }
