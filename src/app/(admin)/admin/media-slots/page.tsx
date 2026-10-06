@@ -7,20 +7,21 @@ export const metadata: Metadata = { title: "Media Slots | Admin" };
 export default async function AdminMediaSlotsPage({
   searchParams,
 }: {
-  searchParams: { slotId?: string };
+  searchParams: Promise<{ slotId?: string }>;
 }) {
+  const { slotId } = await searchParams;
   const slots = await getAllMediaSlots();
-  
+
   // Default to the first slot if none selected
-  const activeSlotId = searchParams.slotId 
-    ? parseInt(searchParams.slotId) 
-    : slots[0]?.id;
+  const activeSlotId = slotId ? parseInt(slotId) : slots[0]?.id;
 
-  const slides = activeSlotId 
-    ? await getSlidesForSlot(activeSlotId)
-    : [];
+  const slides =
+    activeSlotId && !isNaN(activeSlotId)
+      ? await getSlidesForSlot(activeSlotId)
+      : [];
 
-  const activeSlot = slots.find((s) => s.id === activeSlotId) || null;
+  const activeSlot =
+    slots.find((s) => s.id === activeSlotId) ?? slots[0] ?? null;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -31,12 +32,12 @@ export default async function AdminMediaSlotsPage({
         </p>
       </div>
 
-      <MediaManagerClient 
-        slots={slots} 
-        activeSlot={activeSlot} 
+      <MediaManagerClient
+        slots={slots}
+        activeSlot={activeSlot}
         slides={slides}
-        cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || ""}
-        apiKey={process.env.CLOUDINARY_API_KEY || ""}
+        cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? ""}
+        apiKey={process.env.CLOUDINARY_API_KEY ?? ""}
       />
     </div>
   );
