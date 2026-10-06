@@ -291,36 +291,7 @@ export default function MediaSliderClient({
         </div>
       )}
 
-      {/* ── CONTROLS ────────────────────────────────────────────────────────── */}
-      {hasControls && (
-        <div className="absolute bottom-10 left-0 right-0 flex items-center justify-center gap-4 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <button onClick={prev} className="h-10 w-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-gold hover:text-navy backdrop-blur-md transition-colors" aria-label="Previous slide">
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-          <button onClick={() => setIsPlaying(p => !p)} className="h-10 w-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-gold hover:text-navy backdrop-blur-md transition-colors" aria-label={isPlaying ? "Pause" : "Play"}>
-            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
-          </button>
-          <button onClick={next} className="h-10 w-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-gold hover:text-navy backdrop-blur-md transition-colors" aria-label="Next slide">
-            <ChevronRight className="h-6 w-6" />
-          </button>
-        </div>
-      )}
-
-      {/* ── DOTS ────────────────────────────────────────────────────────────── */}
-      {hasControls && (
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-30">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`h-1.5 rounded-full transition-all ${
-                i === currentIndex ? "w-6 bg-gold" : "w-1.5 bg-white/50"
-              }`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
+      {/* ── DOTS / CONTROLS (Removed per request) ────────────── */}
     </div>
   );
 }
