@@ -85,12 +85,7 @@ export async function getNewArrivals(limit = 6) {
   const prods = await db
     .select()
     .from(products)
-    .where(
-      and(
-        eq(products.isPublished, true),
-        eq(products.isNewArrival, true)
-      )
-    )
+    .where(eq(products.isPublished, true))
     .orderBy(desc(products.id))
     .limit(limit);
 

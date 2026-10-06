@@ -101,43 +101,8 @@ export default async function ShopPage({
               </ul>
             </div>
 
-            <form method="GET" action="/shop" className="bg-white rounded-xl border border-border p-5 shadow-sm">
-              {categorySlug && <input type="hidden" name="category" value={categorySlug} />}
-              {q && <input type="hidden" name="q" value={q} />}
-              <h3 className="font-bold text-navy mb-3 text-sm uppercase tracking-wide">Price (₦)</h3>
-              <div className="space-y-2">
-                <input
-                  type="number"
-                  name="min"
-                  placeholder="Min price"
-                  defaultValue={minPrice}
-                  className="w-full border border-border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40"
-                />
-                <input
-                  type="number"
-                  name="max"
-                  placeholder="Max price"
-                  defaultValue={maxPrice}
-                  className="w-full border border-border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40"
-                />
-              </div>
-              <button
-                type="submit"
-                className="mt-3 w-full bg-navy text-white text-sm font-semibold py-2 rounded-lg hover:bg-navy-mid transition-colors"
-              >
-                Apply Filter
-              </button>
-              {(minPrice || maxPrice) && (
-                <Link
-                  href={buildUrl({ min: undefined, max: undefined, page: "1" })}
-                  className="block text-center text-xs text-text-muted mt-2 hover:text-navy"
-                >
-                  Clear price filter
-                </Link>
-              )}
-            </form>
           </aside>
-
+          
           {/* Product Grid */}
           <main className="flex-1 min-w-0">
             {(categorySlug || minPrice || maxPrice || q) && (
