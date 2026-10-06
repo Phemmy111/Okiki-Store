@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   getFeaturedProducts,
-  getNewArrivals,
   getStoreSettings,
 } from "@/lib/data/storefront";
 import ProductCard from "@/components/store/ProductCard";
@@ -36,9 +35,8 @@ const BUNDLES = [
 ];
 
 export default async function HomePage() {
-  const [featuredProducts, newArrivals, settings] = await Promise.all([
-    getFeaturedProducts(4),
-    getNewArrivals(6), // Fetch 6 for latest products
+  const [featuredProducts, settings] = await Promise.all([
+    getFeaturedProducts(8),
     getStoreSettings(),
   ]);
 
@@ -141,24 +139,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── LATEST PRODUCTS ──────────────────────────────────────────────────── */}
-      {newArrivals.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-navy">
-              Latest Products
-            </h2>
-            <Link href="/shop" className="text-sm font-semibold text-blue hover:underline">
-              View All →
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 sm:gap-6">
-            {newArrivals.map((p) => (
-              <ProductCard key={p.id} product={p as any} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* ── EQUIP YOUR SALON ─────────────────────────────────────────────────── */}
       <section className="bg-navy-mid py-20 relative overflow-hidden">

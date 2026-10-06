@@ -33,9 +33,9 @@ export default function AdminBrandsClient({
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-page border-b border-border text-text-muted">
             <tr>
-              <th className="px-6 py-4 font-semibold">Brand</th>
-              <th className="px-6 py-4 font-semibold">Slug</th>
-              <th className="px-6 py-4 font-semibold text-right">Actions</th>
+              <th className="px-4 sm:px-6 py-4 font-semibold">Brand</th>
+              <th className="hidden sm:table-cell px-6 py-4 font-semibold">Slug</th>
+              <th className="px-4 sm:px-6 py-4 font-semibold text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -48,26 +48,29 @@ export default function AdminBrandsClient({
             ) : (
               brands.map((brand) => (
                 <tr key={brand.id} className="hover:bg-page/50 transition-colors">
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded bg-page border border-border overflow-hidden relative shrink-0">
+                      <div className="w-12 h-12 sm:w-10 sm:h-10 rounded bg-page border border-border overflow-hidden relative shrink-0">
                         {brand.logoPublicId ? (
                           <Image
                             src={`https://res.cloudinary.com/${cloudName}/image/upload/w_100,h_100,c_fit/${brand.logoPublicId}`}
                             alt={brand.name}
                             fill
                             className="object-contain p-1"
-                            sizes="40px"
+                            sizes="48px"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs opacity-50">No Img</div>
+                          <div className="w-full h-full flex items-center justify-center text-[10px] opacity-50">No Img</div>
                         )}
                       </div>
-                      <div className="font-semibold text-navy max-w-xs truncate">{brand.name}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-navy truncate">{brand.name}</div>
+                        <div className="text-[11px] text-text-muted sm:hidden mt-0.5 truncate">{brand.slug}</div>
+                      </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-text-muted">{brand.slug}</td>
-                  <td className="px-6 py-4 text-right space-x-2">
+                  <td className="hidden sm:table-cell px-6 py-4 text-text-muted">{brand.slug}</td>
+                  <td className="px-4 sm:px-6 py-4 text-right space-x-2">
                     <button
                       onClick={() => alert("Edit modal coming soon")}
                       className="text-blue hover:underline text-xs font-semibold"

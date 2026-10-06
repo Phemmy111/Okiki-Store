@@ -39,11 +39,11 @@ export default function AdminProductsClient({
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead className="bg-page border-b border-border text-text-muted">
             <tr>
-              <th className="px-6 py-4 font-semibold">Product</th>
-              <th className="px-6 py-4 font-semibold">Category / Brand</th>
-              <th className="px-6 py-4 font-semibold">Price</th>
-              <th className="px-6 py-4 font-semibold">Status</th>
-              <th className="px-6 py-4 font-semibold text-right">Actions</th>
+              <th className="px-4 sm:px-6 py-4 font-semibold">Product</th>
+              <th className="hidden md:table-cell px-6 py-4 font-semibold">Category / Brand</th>
+              <th className="hidden sm:table-cell px-6 py-4 font-semibold">Price</th>
+              <th className="hidden sm:table-cell px-6 py-4 font-semibold">Status</th>
+              <th className="px-4 sm:px-6 py-4 font-semibold text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -56,35 +56,49 @@ export default function AdminProductsClient({
             ) : (
               products.map((product) => (
                 <tr key={product.id} className="hover:bg-page/50 transition-colors">
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded bg-page border border-border overflow-hidden relative shrink-0">
+                      <div className="w-12 h-12 sm:w-10 sm:h-10 rounded bg-page border border-border overflow-hidden relative shrink-0">
                         {product.imagePublicId ? (
                           <Image
                             src={`https://res.cloudinary.com/${cloudName}/image/upload/w_100,h_100,c_fill/${product.imagePublicId}`}
                             alt={product.name}
                             fill
                             className="object-cover"
-                            sizes="40px"
+                            sizes="48px"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs opacity-50">No Img</div>
+                          <div className="w-full h-full flex items-center justify-center text-[10px] opacity-50">No Img</div>
                         )}
                       </div>
-                      <div>
-                        <div className="font-semibold text-navy max-w-xs truncate">{product.name}</div>
-                        <div className="text-xs text-text-muted">{product.slug}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-navy truncate whitespace-normal sm:whitespace-nowrap line-clamp-2 sm:line-clamp-none leading-tight">{product.name}</div>
+                        <div className="text-[11px] text-text-muted hidden sm:block truncate mt-0.5">{product.slug}</div>
+                        
+                        {/* Mobile-only Price & Status */}
+                        <div className="sm:hidden flex items-center gap-2 mt-1.5">
+                          <span className="text-xs font-bold text-blue">
+                            {product.priceKobo ? `₦${(product.priceKobo / 100).toLocaleString()}` : "Ask price"}
+                          </span>
+                          <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            product.stockStatus === "in_stock" ? "bg-green-100 text-green-700" :
+                            product.stockStatus === "out_of_stock" ? "bg-red-100 text-red-700" :
+                            "bg-yellow-100 text-yellow-700"
+                          }`}>
+                            {product.stockStatus.replace("_", " ")}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="hidden md:table-cell px-6 py-4">
                     <div className="text-navy">{product.category?.name ?? "No Category"}</div>
                     <div className="text-xs text-text-muted">{product.brand?.name ?? "No Brand"}</div>
                   </td>
-                  <td className="px-6 py-4 font-medium text-navy">
+                  <td className="hidden sm:table-cell px-6 py-4 font-medium text-navy">
                     {product.priceKobo ? `₦${(product.priceKobo / 100).toLocaleString()}` : "Ask for price"}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="hidden sm:table-cell px-6 py-4">
                     <span className={`inline-flex px-2 py-1 rounded text-xs font-semibold ${
                       product.stockStatus === "in_stock" ? "bg-green-100 text-green-700" :
                       product.stockStatus === "out_of_stock" ? "bg-red-100 text-red-700" :
@@ -98,7 +112,7 @@ export default function AdminProductsClient({
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right space-x-2">
+                  <td className="px-4 sm:px-6 py-4 text-right space-x-2">
                     <button
                       onClick={() => alert("Edit modal coming soon")}
                       className="text-blue hover:underline text-xs font-semibold"
