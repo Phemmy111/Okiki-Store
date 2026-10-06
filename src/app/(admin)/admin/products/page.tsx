@@ -19,7 +19,6 @@ export default async function AdminProductsPage() {
       priceKobo: products.priceKobo,
       stockStatus: products.stockStatus,
       isFeatured: products.isFeatured,
-      imagePublicId: products.imagePublicId,
       category: { id: categories.id, name: categories.name },
       brand: { id: brands.id, name: brands.name },
     })
@@ -27,6 +26,28 @@ export default async function AdminProductsPage() {
     .leftJoin(categories, eq(products.categoryId, categories.id))
     .leftJoin(brands, eq(products.brandId, brands.id))
     .orderBy(desc(products.id));
+
+  // Get primary media for the products
+  const { productMedia } = await import("@/db/schema");
+  const { inArray, asc } = await import("drizzle-orm");
+  
+  const allMedia = allProducts.length > 0 ? await db
+    .select()
+    .from(productMedia)
+    .where(inArray(productMedia.productId, allProducts.map(p => p.id)))
+    .orderBy(asc(productMedia.sortOrder), desc(productMedia.id)) : [];
+
+  const mediaMap = new Map();
+  for (const media of allMedia) {
+    if (!mediaMap.has(media.productId)) {
+      mediaMap.set(media.productId, media.publicId);
+    }
+  }
+
+  const productsWithMedia = allProducts.map((p) => ({
+    ...p,
+    imagePublicId: mediaMap.get(p.id) || null,
+  }));
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -41,7 +62,7 @@ export default async function AdminProductsPage() {
       </div>
       
       <AdminProductsClient
-        products={allProducts}
+        products={productsWithMedia}
         cloudName={process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? ""}
       />
     </div>
