@@ -1,5 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import { requireAdminDb } from "@/lib/data/auth";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -7,24 +6,6 @@ export const metadata: Metadata = {
   title: "Admin Dashboard | OKIKI Store",
   robots: { index: false, follow: false },
 };
-
-// ── Admin gate ────────────────────────────────────────────────────────────────
-// Phase 1: blocks unauthenticated users only.
-// Phase 2: will also verify the caller's email is in the `admins` table.
-
-async function requireAdmin() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
-
-  // TODO Phase 2 — uncomment after DB is wired:
-  // const user = await currentUser();
-  // const email = user?.emailAddresses?.[0]?.emailAddress;
-  // if (!email) redirect("/unauthorized");
-  // const [admin] = await db.select().from(schema.admins).where(eq(schema.admins.email, email));
-  // if (!admin) redirect("/unauthorized");
-
-  return { userId };
-}
 
 const ADMIN_NAV = [
   { href: "/admin", label: "📊 Overview" },
@@ -40,7 +21,7 @@ const ADMIN_NAV = [
 export default async function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  await requireAdmin();
+  await requireAdminDb();
 
   return (
     <div className="min-h-screen bg-page flex">
