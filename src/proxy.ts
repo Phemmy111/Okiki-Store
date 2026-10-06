@@ -1,13 +1,18 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 // Routes that require an authenticated Clerk session
-// The actual admin-role check (admins table) happens inside the admin layout
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
 export default clerkMiddleware(async (auth, request) => {
   if (isAdminRoute(request)) {
-    // Redirects to Clerk sign-in if unauthenticated
-    await auth.protect();
+    const { userId } = await auth();
+    if (!userId) {
+      // Redirect to our branded sign-in page with return URL
+      const signInUrl = new URL("/sign-in", request.url);
+      signInUrl.searchParams.set("redirect_url", request.nextUrl.pathname);
+      return NextResponse.redirect(signInUrl);
+    }
   }
   // All storefront routes are public
 });
