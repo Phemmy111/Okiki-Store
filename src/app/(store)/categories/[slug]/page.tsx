@@ -74,11 +74,6 @@ export default async function CategoryPage({
             <h1 className="font-display text-3xl md:text-5xl font-bold text-white drop-shadow-lg">
               {category.name}
             </h1>
-            {category.description && (
-              <p className="text-white/80 text-sm md:text-base mt-2 max-w-lg drop-shadow">
-                {category.description}
-              </p>
-            )}
           </div>
         </MediaSlider>
       </div>
