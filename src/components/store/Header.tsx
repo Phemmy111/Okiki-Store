@@ -130,7 +130,7 @@ export default function Header() {
                 >
                   ⚙️ Admin
                 </Link>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton />
               </div>
             )}
 

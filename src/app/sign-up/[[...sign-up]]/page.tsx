@@ -12,7 +12,7 @@ export default function SignUpPage() {
       </div>
       <SignUp
         routing="hash"
-        afterSignUpUrl="/"
+        fallbackRedirectUrl="/"
         signInUrl="/sign-in"
         appearance={{
           elements: {
