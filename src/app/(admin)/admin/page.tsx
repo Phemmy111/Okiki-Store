@@ -1,35 +1,42 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { db } from "@/db";
+import { products, categories, bundles } from "@/db/schema";
+import { count } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "Overview | Admin",
 };
 
-const QUICK_CARDS = [
-  {
-    label: "Quote Requests",
-    value: "—",
-    sub: "Phase 2 — DB not connected",
-    href: "/admin/quotes",
-    color: "border-l-blue",
-  },
-  {
-    label: "Products",
-    value: "—",
-    sub: "Phase 2 — DB not connected",
-    href: "/admin/products",
-    color: "border-l-gold",
-  },
-  {
-    label: "Low / Out of Stock",
-    value: "—",
-    sub: "Phase 2 — DB not connected",
-    href: "/admin/products?filter=low_stock",
-    color: "border-l-warning",
-  },
-];
+export default async function AdminOverviewPage() {
+  const [productCount] = await db.select({ value: count() }).from(products);
+  const [categoryCount] = await db.select({ value: count() }).from(categories);
+  const [bundleCount] = await db.select({ value: count() }).from(bundles);
 
-export default function AdminOverviewPage() {
+  const QUICK_CARDS = [
+    {
+      label: "Products",
+      value: productCount.value,
+      sub: "Total products in DB",
+      href: "/admin/products",
+      color: "border-l-gold",
+    },
+    {
+      label: "Categories",
+      value: categoryCount.value,
+      sub: "Active categories",
+      href: "/admin/categories",
+      color: "border-l-blue",
+    },
+    {
+      label: "Bundles",
+      value: bundleCount.value,
+      sub: "Configured bundles",
+      href: "/admin/bundles",
+      color: "border-l-warning",
+    },
+  ];
+
   return (
     <div>
       <div className="mb-8">
@@ -37,7 +44,7 @@ export default function AdminOverviewPage() {
           Dashboard Overview
         </h1>
         <p className="text-text-secondary mt-1 text-sm">
-          Phase 1 scaffold — live data available after Phase 2 (database setup).
+          Live database metrics and current build progress.
         </p>
       </div>
 
@@ -64,12 +71,12 @@ export default function AdminOverviewPage() {
         <div className="space-y-2 text-sm">
           {[
             { phase: "Phase 0", label: "Design & Implementation Plan", done: true },
-            { phase: "Phase 1", label: "Foundation (you are here)", done: true, active: true },
-            { phase: "Phase 2", label: "Database & Seed", done: false },
-            { phase: "Phase 3", label: "Storefront", done: false },
-            { phase: "Phase 4", label: "Quotes", done: false },
-            { phase: "Phase 5", label: "Admin Dashboard", done: false },
-            { phase: "Phase 6", label: "Polish & Phase 1 Release", done: false },
+            { phase: "Phase 1", label: "Foundation & Auth", done: true },
+            { phase: "Phase 2", label: "Database & Seed", done: true },
+            { phase: "Phase 3", label: "Storefront & Media", done: true },
+            { phase: "Phase 4", label: "Quotes / Cart (Working on this)", done: false, active: true },
+            { phase: "Phase 5", label: "Admin Dashboard (Media Slots Done)", done: false },
+            { phase: "Phase 6", label: "Polish & Final Release", done: false },
           ].map((item) => (
             <div key={item.phase} className="flex items-center gap-3">
               <span
@@ -83,7 +90,7 @@ export default function AdminOverviewPage() {
               >
                 {item.phase}
               </span>
-              <span className={item.active ? "text-navy" : "text-text-secondary"}>
+              <span className={item.active ? "text-navy font-semibold" : "text-text-secondary"}>
                 {item.label}
               </span>
               {item.active && (
@@ -99,20 +106,18 @@ export default function AdminOverviewPage() {
       {/* Quick actions */}
       <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Add Product", href: "/admin/products/new", emoji: "➕" },
-          { label: "Categories", href: "/admin/categories", emoji: "🗂️" },
-          { label: "Hero Slides", href: "/admin/hero-slides", emoji: "🖼️" },
-          { label: "Settings", href: "/admin/settings", emoji: "⚙️" },
-        ].map((action) => (
+          { href: "/admin/products/new", label: "Add Product", icon: "➕" },
+          { href: "/admin/categories", label: "Categories", icon: "🗂️" },
+          { href: "/admin/media-slots", label: "Media Slots", icon: "🖼️" },
+          { href: "/admin/settings", label: "Settings", icon: "⚙️" },
+        ].map((btn) => (
           <Link
-            key={action.href}
-            href={action.href}
-            className="bg-card border border-border rounded-xl p-4 text-center hover:border-gold hover:shadow-sm transition-all text-sm font-medium text-navy"
+            key={btn.label}
+            href={btn.href}
+            className="flex flex-col items-center justify-center gap-2 bg-white border border-border rounded-xl p-4 text-sm font-medium text-navy hover:bg-page transition-colors text-center"
           >
-            <span className="text-2xl block mb-1" aria-hidden>
-              {action.emoji}
-            </span>
-            {action.label}
+            <span className="text-xl" aria-hidden>{btn.icon}</span>
+            {btn.label}
           </Link>
         ))}
       </div>
