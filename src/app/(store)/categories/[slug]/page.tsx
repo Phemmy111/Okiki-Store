@@ -114,24 +114,6 @@ export default async function CategoryPage({
                 ))}
               </ul>
             </div>
-
-            <form method="GET" className="bg-white rounded-xl border border-border p-5 shadow-sm">
-              <h3 className="font-bold text-navy mb-3 text-sm uppercase tracking-wide">Price (₦)</h3>
-              <div className="space-y-2">
-                <input type="number" name="min" placeholder="Min" defaultValue={minPrice}
-                  className="w-full border border-border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40" />
-                <input type="number" name="max" placeholder="Max" defaultValue={maxPrice}
-                  className="w-full border border-border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40" />
-              </div>
-              <button type="submit" className="mt-3 w-full bg-navy text-white text-sm font-semibold py-2 rounded-lg hover:bg-navy-mid transition-colors">
-                Apply
-              </button>
-              {(minPrice || maxPrice) && (
-                <Link href={`/categories/${slug}`} className="block text-center text-xs text-text-muted mt-2 hover:text-navy">
-                  Clear filter
-                </Link>
-              )}
-            </form>
           </aside>
 
           {/* Grid */}
