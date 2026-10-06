@@ -8,9 +8,10 @@ export const metadata: Metadata = { title: "Search Products" };
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const q = (searchParams.q ?? "").trim();
+  const sp = await searchParams;
+  const q = (sp.q ?? "").trim();
   const results = q ? await searchProducts(q) : [];
 
   return (

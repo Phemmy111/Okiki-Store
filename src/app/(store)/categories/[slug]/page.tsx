@@ -29,12 +29,13 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: { page?: string; min?: string; max?: string };
+  searchParams: Promise<{ page?: string; min?: string; max?: string }>;
 }) {
   const { slug } = await params;
-  const page = Math.max(1, parseInt(searchParams.page ?? "1"));
-  const minPrice = searchParams.min ? parseInt(searchParams.min) : undefined;
-  const maxPrice = searchParams.max ? parseInt(searchParams.max) : undefined;
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1"));
+  const minPrice = sp.min ? parseInt(sp.min) : undefined;
+  const maxPrice = sp.max ? parseInt(sp.max) : undefined;
 
   const [category, { items, total }, allCategories] = await Promise.all([
     getCategoryBySlug(slug),
@@ -51,8 +52,8 @@ export default async function CategoryPage({
     const params = new URLSearchParams();
     const merged: Record<string, string | undefined> = {
       page: String(page),
-      min: searchParams.min,
-      max: searchParams.max,
+      min: sp.min,
+      max: sp.max,
       ...overrides,
     };
     for (const [k, v] of Object.entries(merged)) {

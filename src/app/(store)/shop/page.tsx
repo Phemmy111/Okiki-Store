@@ -11,19 +11,20 @@ const PER_PAGE = 24;
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     category?: string;
     min?: string;
     max?: string;
     q?: string;
-  };
+  }>;
 }) {
-  const page = Math.max(1, parseInt(searchParams.page ?? "1"));
-  const categorySlug = searchParams.category;
-  const minPrice = searchParams.min ? parseInt(searchParams.min) : undefined;
-  const maxPrice = searchParams.max ? parseInt(searchParams.max) : undefined;
-  const q = searchParams.q;
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1"));
+  const categorySlug = sp.category;
+  const minPrice = sp.min ? parseInt(sp.min) : undefined;
+  const maxPrice = sp.max ? parseInt(sp.max) : undefined;
+  const q = sp.q;
 
   const [{ items, total }, categories] = await Promise.all([
     getShopProducts({ page, perPage: PER_PAGE, categorySlug, minPrice, maxPrice, q }),
@@ -37,8 +38,8 @@ export default async function ShopPage({
     const merged: Record<string, string | undefined> = {
       page: String(page),
       category: categorySlug,
-      min: searchParams.min,
-      max: searchParams.max,
+      min: sp.min,
+      max: sp.max,
       q,
       ...overrides,
     };
