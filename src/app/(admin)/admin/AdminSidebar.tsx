@@ -1,19 +1,19 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 const ADMIN_NAV = [
-  { href: "/admin", label: "📊 Overview" },
-  { href: "/admin/products", label: "📦 Products" },
-  { href: "/admin/categories", label: "🗂️ Categories" },
-  { href: "/admin/brands", label: "🏷️ Brands" },
-  { href: "/admin/bundles", label: "🎁 Bundles" },
-  { href: "/admin/media-slots", label: "🖼️ Media Slots" },
-  { href: "/admin/quotes", label: "💬 Quote Requests" },
-  { href: "/admin/admins", label: "👥 Admins" },
-  { href: "/admin/settings", label: "⚙️ Settings" },
+  { href: "/admin", label: "ðŸ“Š Overview" },
+  { href: "/admin/products", label: "ðŸ“¦ Products" },
+  { href: "/admin/categories", label: "ðŸ—‚ï¸ Categories" },
+  { href: "/admin/brands", label: "ðŸ·ï¸ Brands" },
+  { href: "/admin/bundles", label: "ðŸŽ Bundles" },
+  { href: "/admin/media-slots", label: "ðŸ–¼ï¸ Media Slots" },
+  { href: "/admin/orders", label: "ðŸ’¬ Quote Requests" },
+  { href: "/admin/admins", label: "ðŸ‘¥ Admins" },
+  { href: "/admin/settings", label: "âš™ï¸ Settings" },
 ];
 
 export default function AdminSidebar() {
@@ -62,7 +62,7 @@ export default function AdminSidebar() {
           href="/"
           className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-white/50 hover:text-white/80 transition-colors"
         >
-          ← Back to store
+          â† Back to store
         </Link>
       </div>
     </>
@@ -70,7 +70,7 @@ export default function AdminSidebar() {
 
   return (
     <>
-      {/* ── Desktop sidebar (always visible) ─────────────────────────── */}
+      {/* â”€â”€ Desktop sidebar (always visible) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <aside className="hidden md:flex md:flex-col w-56 lg:w-64 bg-navy text-white shrink-0 sticky top-0 h-screen">
         <div className="px-5 py-5 border-b border-white/10">
           <Link href="/admin" className="block">
@@ -83,14 +83,14 @@ export default function AdminSidebar() {
         {navLinks}
       </aside>
 
-      {/* ── Mobile top bar ────────────────────────────────────────────── */}
+      {/* â”€â”€ Mobile top bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="md:hidden flex items-center justify-between bg-navy text-white px-4 py-3 border-b border-white/10 sticky top-0 z-40">
         <Link href="/admin" className="block">
           <span className="font-display text-xl font-bold text-gold">OKIKI Admin</span>
         </Link>
         <div className="flex items-center gap-3">
           <Link href="/" className="text-xs text-white/60 hover:text-white">
-            ← Store
+            â† Store
           </Link>
           <button
             onClick={() => setOpen(true)}
@@ -102,7 +102,7 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      {/* ── Mobile drawer overlay ─────────────────────────────────────── */}
+      {/* â”€â”€ Mobile drawer overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {open && (
         <div
           className="fixed inset-0 z-50 md:hidden"
@@ -141,3 +141,4 @@ export default function AdminSidebar() {
     </>
   );
 }
+

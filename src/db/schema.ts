@@ -164,6 +164,7 @@ export const orders = pgTable("orders", {
   status: varchar("status", { length: 20 }).default("new").notNull(), // new, contacted, confirmed, delivered, cancelled
   paymentStatus: varchar("payment_status", { length: 20 }).default("unpaid").notNull(), // unpaid, partial, paid
   paymentMethod: varchar("payment_method", { length: 50 }), // cash, transfer, pos, other
+  receiptUrl: text("receipt_url"),
   adminNotes: text("admin_notes"),
   totalKobo: integer("total_kobo"), // null if any item is "ask for price"
   isSample: boolean("is_sample").default(false).notNull(),

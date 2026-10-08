@@ -43,11 +43,11 @@ export default function AddToQuoteButton({
         }`}
       >
         {added ? (
-          <><Check className="w-4 h-4 text-green-600" /> Added to Quote!</>
+          <><Check className="w-4 h-4 text-green-600" /> Added to Bag!</>
         ) : isInQuote ? (
-          <><ShoppingBag className="w-4 h-4" /> In Your Quote</>
+          <><ShoppingBag className="w-4 h-4" /> In Your Bag</>
         ) : (
-          <><ShoppingBag className="w-4 h-4" /> Add to Quote</>
+          <><ShoppingBag className="w-4 h-4" /> Add to Bag</>
         )}
       </button>
     );
@@ -57,7 +57,7 @@ export default function AddToQuoteButton({
   return (
     <button
       onClick={handleAdd}
-      aria-label="Add to quote list"
+      aria-label="Add to Bag list"
       className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
         added
           ? "bg-green-500 text-white"
@@ -74,3 +74,4 @@ export default function AddToQuoteButton({
     </button>
   );
 }
+

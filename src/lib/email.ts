@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+﻿import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -63,7 +63,7 @@ export async function sendQuoteNotificationEmail(
           <!-- Alert banner -->
           <tr>
             <td style="background:#c9a84c;padding:12px 32px;text-align:center;">
-              <p style="margin:0;color:#0a1628;font-weight:bold;font-size:15px;">🛒 New Quote Request — #${quoteId}</p>
+              <p style="margin:0;color:#0a1628;font-weight:bold;font-size:15px;">ðŸ›’ New Quote Request â€” #${quoteId}</p>
             </td>
           </tr>
 
@@ -108,7 +108,7 @@ export async function sendQuoteNotificationEmail(
 
               <!-- CTA -->
               <div style="text-align:center;">
-                <a href="${APP_URL}/admin/quotes"
+                <a href="${APP_URL}/admin/orders"
                   style="display:inline-block;background:#0a1628;color:#ffffff;font-weight:bold;font-size:15px;padding:14px 36px;border-radius:50px;text-decoration:none;">
                   View in Admin Dashboard
                 </a>
@@ -146,14 +146,35 @@ Requested Items:
 ${items.map((item) => `- ${item.qty}x ${item.name}`).join("\n")}
 
 View in Admin Dashboard:
-${APP_URL}/admin/quotes
+${APP_URL}/admin/orders
   `;
 
   await transporter.sendMail({
     from: `"OKIKI Store" <${process.env.SMTP_USER}>`,
     to: toEmails,
-    subject: `🛒 New Quote Request from ${customerDetails.name} — #${quoteId}`,
+    subject: `ðŸ›’ New Quote Request from ${customerDetails.name} â€” #${quoteId}`,
     html,
     text,
   });
 }
+
+export async function sendOrderStatusEmail(toEmail: string, customerName: string, reference: string, status: string) {
+  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return;
+  const statusDisplay = status.charAt(0).toUpperCase() + status.slice(1);
+  const html = \
+  <div style="font-family:Arial,sans-serif;padding:20px;color:#333;">
+    <h2>Order Status Update</h2>
+    <p>Hello \,</p>
+    <p>Your order (<strong>\</strong>) status has been updated to: <strong style="color:#0a1628;">\</strong>.</p>
+    <p>You can track your order anytime on our <a href="\/my-orders">Track Order</a> page.</p>
+    <p>Thank you for shopping with OKIKI Store!</p>
+  </div>
+  \;
+  await transporter.sendMail({
+    from: \"OKIKI Store" <\>\,
+    to: toEmail,
+    subject: \Order \ is now \\,
+    html,
+  });
+}
+

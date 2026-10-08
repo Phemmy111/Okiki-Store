@@ -12,8 +12,8 @@ const FOOTER_LINKS = {
     { label: "Bundles", href: "/bundles" },
   ],
   "Customer Service": [
-    { label: "Get a Quote", href: "/quote" },
-    { label: "Wholesale Enquiry", href: "/quote?type=wholesale" },
+    { label: "Bag", href: "/quote" },
+    { label: "Bulk Orders", href: "/quote?type=wholesale" },
     { label: "Visit Our Store", href: "/store" },
     { label: "Contact Us", href: "/store#contact" },
   ],
@@ -110,3 +110,4 @@ export default function Footer() {
     </footer>
   );
 }
+

@@ -13,6 +13,7 @@ export default function QuotePage() {
   const { items, removeItem, updateQty, clearQuote } = useQuoteStore();
   const [isPending, startTransition] = useTransition();
   const [submittedName, setSubmittedName] = useState("");
+  const [submittedRef, setSubmittedRef] = useState("");
   const [error, setError] = useState("");
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
   const [cloudKeys, setCloudKeys] = useState<{cloudName?: string, apiKey?: string}>({});
@@ -69,6 +70,7 @@ export default function QuotePage() {
         items.map((i) => ({
           productId: i.productId,
           productNameSnapshot: i.name,
+          priceKobo: i.priceKobo,
           qty: i.qty,
         }))
       )
@@ -80,6 +82,8 @@ export default function QuotePage() {
         setError(result.error);
       } else {
         setSubmittedName(customerName);
+        setSubmittedRef(result.reference);
+        try { const stored = JSON.parse(localStorage.getItem("okiki_orders") || "[]"); stored.push(result.reference); localStorage.setItem("okiki_orders", JSON.stringify(stored)); } catch {}
         clearQuote();
       }
     });
@@ -88,13 +92,13 @@ export default function QuotePage() {
   /* ── Submitted state ──────────────────────────────────────────── */
   if (submittedName) {
     const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348022932216";
-    const waMessage = `Hello OKIKI Store! I just submitted a quote request on the website. My name is *${submittedName}*. Please check it.`;
+    const waMessage = `Hello OKIKI Store! I just submitted an order on the website. My name is *${submittedName}*. Please check it.`;
 
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
         <CheckCircle2 className="w-16 h-16 text-green-500 mb-4" />
         <h1 className="font-display text-2xl font-bold text-navy mb-2">
-          Quote Request Sent!
+          Order Sent! (Ref: {submittedRef})
         </h1>
         <p className="text-text-secondary max-w-md mb-8">
           Thank you! We've received your request. You can notify us on WhatsApp now for an instant response, or we will reach out to you shortly.
@@ -127,10 +131,10 @@ export default function QuotePage() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
         <ShoppingBag className="w-16 h-16 text-border mb-4" />
         <h1 className="font-display text-2xl font-bold text-navy mb-2">
-          Your Quote List is Empty
+          Your Bag is Empty
         </h1>
         <p className="text-text-secondary max-w-sm mb-6">
-          Browse our products and tap the bag icon to add items to your quote.
+          Browse our products and tap the bag icon to add items to your bag.
         </p>
         <Link
           href="/shop"
@@ -146,7 +150,7 @@ export default function QuotePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-32 md:pb-10">
       <h1 className="font-display text-2xl md:text-3xl font-bold text-navy mb-2">
-        Your Quote List
+        Your Bag
       </h1>
       <p className="text-text-secondary text-sm mb-8">
         {items.length} item{items.length !== 1 ? "s" : ""} — fill in your details and we'll get back to you.
@@ -250,13 +254,24 @@ export default function QuotePage() {
               />
             </div>
 
+                        <div>
+              <label className="block text-sm font-semibold text-navy mb-1">
+                Email Address *
+              </label>
+              <input
+                name="email"
+                required
+                type="email"
+                placeholder="e.g. hello@example.com"
+                className="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-gold/50 bg-white"
+              />
+            </div>
             <div>
               <label className="block text-sm font-semibold text-navy mb-1">
                 WhatsApp / Phone *
               </label>
               <input
-                name="phone"
-                required
+                name="phone" required
                 type="tel"
                 placeholder="e.g. 08022932216"
                 className="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-gold/50 bg-white"
@@ -338,7 +353,7 @@ export default function QuotePage() {
               disabled={isPending || (cartTotal > 0 && !receiptUrl)}
               className="w-full bg-navy text-white font-bold py-3 rounded-xl hover:bg-navy-mid transition-colors disabled:opacity-60"
             >
-              {isPending ? "Sending..." : cartTotal > 0 ? "Complete Order" : "Send Quote Request"}
+              {isPending ? "Sending..." : cartTotal > 0 ? "Complete Order" : "Submit Order"}
             </button>
 
             <p className="text-xs text-text-muted text-center">
@@ -350,5 +365,8 @@ export default function QuotePage() {
     </div>
   );
 }
+
+
+
 
 

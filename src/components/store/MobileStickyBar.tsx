@@ -38,11 +38,11 @@ export default function MobileStickyBar() {
           <span className="text-[10px] font-semibold">WhatsApp</span>
         </a>
 
-        {/* Quote list */}
+        {/* Bag */}
         <Link
           href="/quote"
           className="relative flex flex-col items-center gap-1 py-3 text-navy hover:bg-page transition-colors active:bg-border"
-          aria-label={`Quote list${totalItems > 0 ? ` — ${totalItems} items` : ""}`}
+          aria-label={`Bag${totalItems > 0 ? ` — ${totalItems} items` : ""}`}
         >
           <div className="relative">
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -55,7 +55,7 @@ export default function MobileStickyBar() {
             )}
           </div>
           <span className="text-[10px] font-semibold">
-            Quote{totalItems > 0 ? ` (${totalItems})` : ""}
+            Bag{totalItems > 0 ? ` (${totalItems})` : ""}
           </span>
         </Link>
       </div>
@@ -65,3 +65,4 @@ export default function MobileStickyBar() {
     </div>
   );
 }
+
