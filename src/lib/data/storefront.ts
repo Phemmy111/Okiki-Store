@@ -69,12 +69,7 @@ export async function getFeaturedProducts(limit = 4) {
   const prods = await db
     .select()
     .from(products)
-    .where(
-      and(
-        eq(products.isPublished, true),
-        eq(products.isFeatured, true)
-      )
-    )
+    .where(eq(products.isPublished, true))
     .orderBy(desc(products.id))
     .limit(limit);
 
