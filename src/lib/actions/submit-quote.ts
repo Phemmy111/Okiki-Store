@@ -76,3 +76,10 @@ export async function submitQuoteAction(formData: FormData) {
 
   return { success: true, quoteId: inserted.id };
 }
+
+export async function getCloudinaryKeys() {
+  return {
+    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY
+  };
+}

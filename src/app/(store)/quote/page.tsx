@@ -1,11 +1,11 @@
 "use client";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
 import { Trash2, Plus, Minus, ShoppingBag, CheckCircle2, UploadCloud } from "lucide-react";
 import { useQuoteStore } from "@/store/quoteStore";
-import { submitQuoteAction } from "@/lib/actions/submit-quote";
+import { submitQuoteAction, getCloudinaryKeys } from "@/lib/actions/submit-quote";
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
 
@@ -15,6 +15,8 @@ export default function QuotePage() {
   const [submittedName, setSubmittedName] = useState("");
   const [error, setError] = useState("");
   const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [cloudKeys, setCloudKeys] = useState<{cloudName?: string, apiKey?: string}>({});
+  useEffect(() => { getCloudinaryKeys().then(setCloudKeys); }, []);
 
   const cartTotal = items.reduce((sum, item) => sum + (item.priceKobo || 0) * item.qty, 0);
 
@@ -35,9 +37,9 @@ export default function QuotePage() {
     }
     (window as any).cloudinary.createUploadWidget(
       {
-        cloudName: CLOUD_NAME,
+        cloudName: cloudKeys.cloudName || CLOUD_NAME,
         uploadSignature: makeSignature,
-        apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+        apiKey: cloudKeys.apiKey,
         resourceType: "image",
         multiple: false,
         maxFiles: 1,
@@ -348,3 +350,5 @@ export default function QuotePage() {
     </div>
   );
 }
+
+
