@@ -113,12 +113,12 @@ export default function AdminProductsClient({
                     )}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right space-x-2">
-                    <button
-                      onClick={() => alert("Edit modal coming soon")}
+                    <Link
+                      href={`/admin/products/${product.id}/edit`}
                       className="text-blue hover:underline text-xs font-semibold"
                     >
                       Edit
-                    </button>
+                    </Link>
                     <button
                       onClick={() => handleDelete(product.id)}
                       disabled={isPending}
