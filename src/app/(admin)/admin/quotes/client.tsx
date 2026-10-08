@@ -21,7 +21,7 @@ type Quote = {
   name: string;
   phone: string;
   businessName: string | null;
-  message: string | null;
+  message: string | null; receiptUrl: string | null;
   status: string;
   createdAt: Date;
   items: QuoteItem[];
@@ -119,6 +119,14 @@ export default function AdminQuotesClient({ quotes }: { quotes: Quote[] }) {
           {/* Expanded details */}
           {expandedId === quote.id && (
             <div className="border-t border-border bg-page px-5 py-4 space-y-4">
+                            {quote.receiptUrl && (
+                <div>
+                  <p className="text-xs font-bold text-navy mb-1 uppercase tracking-wide">Payment Receipt</p>
+                  <a href={quote.receiptUrl} target="_blank" rel="noopener noreferrer">
+                    <img src={quote.receiptUrl} alt="Receipt" className="w-full max-w-sm rounded-xl border border-border" />
+                  </a>
+                </div>
+              )}
               {quote.message && (
                 <div>
                   <p className="text-xs font-bold text-navy mb-1 uppercase tracking-wide">Customer Message</p>
@@ -145,3 +153,4 @@ export default function AdminQuotesClient({ quotes }: { quotes: Quote[] }) {
     </div>
   );
 }
+

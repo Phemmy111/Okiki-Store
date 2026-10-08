@@ -40,7 +40,7 @@ export default async function VisitStorePage() {
               <h3 className="font-bold text-navy mb-1">Our Location</h3>
               <p className="text-text-secondary text-sm leading-relaxed">{address}</p>
               <a
-                href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
+                href="https://maps.app.goo.gl/w5uo6RF61C95iSdP7"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block mt-2 text-xs text-gold font-semibold hover:underline"

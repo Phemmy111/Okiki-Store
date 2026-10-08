@@ -138,6 +138,7 @@ export const quoteRequests = pgTable("quote_requests", {
   status: varchar("status", { length: 20 }).default("new").notNull(), // new, contacted, quoted, won, lost
   adminNotes: text("admin_notes"),
   isSample: boolean("is_sample").default(false).notNull(),
+  receiptUrl: text("receipt_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

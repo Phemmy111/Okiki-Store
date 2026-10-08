@@ -15,6 +15,8 @@ export async function submitQuoteAction(formData: FormData) {
   const message = (formData.get("message") as string).trim() || null;
   const itemsJson = formData.get("items") as string;
 
+  const receiptUrl = (formData.get("receiptUrl") as string) || null;
+
   if (!name || !phone) {
     return { error: "Name and phone are required." };
   }
@@ -33,7 +35,7 @@ export async function submitQuoteAction(formData: FormData) {
   // Insert quote request
   const [inserted] = await db
     .insert(quoteRequests)
-    .values({ name, phone, businessName, message, status: "new" })
+    .values({ name, phone, businessName, message, receiptUrl, status: "new" })
     .returning({ id: quoteRequests.id });
 
   // Insert all items

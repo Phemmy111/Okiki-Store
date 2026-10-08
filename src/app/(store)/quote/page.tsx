@@ -2,7 +2,8 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ShoppingBag, CheckCircle2 } from "lucide-react";
+import Script from "next/script";
+import { Trash2, Plus, Minus, ShoppingBag, CheckCircle2, UploadCloud } from "lucide-react";
 import { useQuoteStore } from "@/store/quoteStore";
 import { submitQuoteAction } from "@/lib/actions/submit-quote";
 
@@ -13,12 +14,52 @@ export default function QuotePage() {
   const [isPending, startTransition] = useTransition();
   const [submittedName, setSubmittedName] = useState("");
   const [error, setError] = useState("");
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+
+  const cartTotal = items.reduce((sum, item) => sum + (item.priceKobo || 0) * item.qty, 0);
+
+  const makeSignature = async (callback: Function, paramsToSign: any) => {
+    const res = await fetch("/api/cloudinary/sign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paramsToSign }),
+    });
+    const data = await res.json();
+    callback(data.signature);
+  };
+
+  const openReceiptWidget = () => {
+    if (typeof window === "undefined" || !(window as any).cloudinary) {
+      alert("Upload widget not ready yet. Please try again in a few seconds.");
+      return;
+    }
+    (window as any).cloudinary.createUploadWidget(
+      {
+        cloudName: CLOUD_NAME,
+        uploadSignature: makeSignature,
+        apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+        resourceType: "image",
+        multiple: false,
+        maxFiles: 1,
+        sources: ["local", "camera"],
+      },
+      (error: any, result: any) => {
+        if (!error && result?.event === "success") {
+          setReceiptUrl(result.info.secure_url);
+        }
+      }
+    ).open();
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     const fd = new FormData(e.currentTarget);
     const customerName = fd.get("name") as string;
+    
+    if (receiptUrl) {
+      fd.set("receiptUrl", receiptUrl);
+    }
 
     fd.set(
       "items",
@@ -247,12 +288,55 @@ export default function QuotePage() {
               <p className="text-red-500 text-sm font-medium">{error}</p>
             )}
 
+            {cartTotal > 0 && (
+              <div className="mt-6 pt-6 border-t border-border">
+                <h3 className="font-bold text-navy text-base mb-3">Direct Bank Transfer</h3>
+                <div className="bg-page rounded-xl p-4 border border-border space-y-2 mb-4">
+                  <p className="text-sm text-text-secondary flex justify-between">
+                    <span>Total Amount:</span>
+                    <span className="font-bold text-navy">₦{(cartTotal / 100).toLocaleString()}</span>
+                  </p>
+                  <hr className="border-border my-2" />
+                  <p className="text-sm text-text-secondary flex justify-between">
+                    <span>Bank:</span>
+                    <span className="font-bold text-navy">Opay</span>
+                  </p>
+                  <p className="text-sm text-text-secondary flex justify-between">
+                    <span>Account No:</span>
+                    <span className="font-bold text-navy tracking-wider">8022932216</span>
+                  </p>
+                  <p className="text-sm text-text-secondary flex justify-between">
+                    <span>Name:</span>
+                    <span className="font-bold text-navy">Babajide Remilekun</span>
+                  </p>
+                </div>
+                
+                <Script src="https://upload-widget.cloudinary.com/global/all.js" strategy="lazyOnload" />
+                
+                <button
+                  type="button"
+                  onClick={openReceiptWidget}
+                  className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gold text-navy font-semibold py-3 rounded-xl hover:bg-gold/5 transition-colors mb-4"
+                >
+                  <UploadCloud className="w-5 h-5 text-gold" />
+                  {receiptUrl ? "Receipt Uploaded (Click to change)" : "Upload Payment Receipt"}
+                </button>
+                
+                {receiptUrl && (
+                  <div className="relative w-full h-32 rounded-xl overflow-hidden mb-4 border border-border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={receiptUrl} alt="Receipt Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+            )}
+
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || (cartTotal > 0 && !receiptUrl)}
               className="w-full bg-navy text-white font-bold py-3 rounded-xl hover:bg-navy-mid transition-colors disabled:opacity-60"
             >
-              {isPending ? "Sending..." : "📨 Send Quote Request"}
+              {isPending ? "Sending..." : cartTotal > 0 ? "Complete Order" : "Send Quote Request"}
             </button>
 
             <p className="text-xs text-text-muted text-center">
