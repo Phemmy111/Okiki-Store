@@ -1,4 +1,4 @@
-﻿import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -161,19 +161,19 @@ ${APP_URL}/admin/orders
 export async function sendOrderStatusEmail(toEmail: string, customerName: string, reference: string, status: string) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return;
   const statusDisplay = status.charAt(0).toUpperCase() + status.slice(1);
-  const html = \
+  const html = `
   <div style="font-family:Arial,sans-serif;padding:20px;color:#333;">
     <h2>Order Status Update</h2>
-    <p>Hello \,</p>
-    <p>Your order (<strong>\</strong>) status has been updated to: <strong style="color:#0a1628;">\</strong>.</p>
-    <p>You can track your order anytime on our <a href="\/my-orders">Track Order</a> page.</p>
+    <p>Hello ${customerName},</p>
+    <p>Your order (<strong>${reference}</strong>) status has been updated to: <strong style="color:#0a1628;">${statusDisplay}</strong>.</p>
+    <p>You can track your order anytime on our <a href="${APP_URL}/my-orders">Track Order</a> page.</p>
     <p>Thank you for shopping with OKIKI Store!</p>
   </div>
-  \;
+  `;
   await transporter.sendMail({
-    from: \"OKIKI Store" <\>\,
+    from: `"OKIKI Store" <${process.env.SMTP_USER}>`,
     to: toEmail,
-    subject: \Order \ is now \\,
+    subject: `Order ${reference} is now ${statusDisplay}`,
     html,
   });
 }
