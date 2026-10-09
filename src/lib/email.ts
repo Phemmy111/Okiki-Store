@@ -63,7 +63,7 @@ export async function sendQuoteNotificationEmail(
           <!-- Alert banner -->
           <tr>
             <td style="background:#c9a84c;padding:12px 32px;text-align:center;">
-              <p style="margin:0;color:#0a1628;font-weight:bold;font-size:15px;">ðŸ›’ New Quote Request â€” #${quoteId}</p>
+              <p style="margin:0;color:#0a1628;font-weight:bold;font-size:15px;">🚨 New Quote Request — #${quoteId}</p>
             </td>
           </tr>
 
@@ -152,7 +152,7 @@ ${APP_URL}/admin/orders
   await transporter.sendMail({
     from: `"OKIKI Store" <${process.env.SMTP_USER}>`,
     to: toEmails,
-    subject: `ðŸ›’ New Quote Request from ${customerDetails.name} â€” #${quoteId}`,
+    subject: `🚨 New Quote Request from ${customerDetails.name} — #${quoteId}`,
     html,
     text,
   });
