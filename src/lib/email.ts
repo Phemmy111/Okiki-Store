@@ -14,7 +14,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://okiki-store.vercel.a
 
 export async function sendQuoteNotificationEmail(
   toEmails: string[],
-  customerDetails: { name: string; phone: string; businessName: string | null; message: string | null },
+  customerDetails: { name: string; phone: string; businessName: string | null; message: string | null; receiptUrl?: string | null },
   items: { name: string; qty: number }[],
   quoteId: number
 ) {
@@ -177,4 +177,5 @@ export async function sendOrderStatusEmail(toEmail: string, customerName: string
     html,
   });
 }
+
 

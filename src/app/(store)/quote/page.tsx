@@ -70,7 +70,8 @@ export default function QuotePage() {
         items.map((i) => ({
           productId: i.productId,
           productNameSnapshot: i.name,
-          priceKobo: i.priceKobo,
+          productSlugSnapshot: i.slug,
+          priceKoboSnapshot: i.priceKobo,
           qty: i.qty,
         }))
       )
@@ -79,7 +80,7 @@ export default function QuotePage() {
     startTransition(async () => {
       const result = await submitQuoteAction(fd);
       if (result?.error) {
-        setError(result.error);
+        setError(result.error as string);
       } else {
         setSubmittedName(customerName);
         setSubmittedRef(result.reference);
@@ -365,6 +366,7 @@ export default function QuotePage() {
     </div>
   );
 }
+
 
 
 

@@ -5,8 +5,9 @@ import { orders, orderItems } from "@/db/schema";
 type QuoteItemInput = {
   productId: number | null;
   productNameSnapshot: string;
+  productSlugSnapshot: string;
   qty: number;
-  priceKobo: number | null;
+  priceKoboSnapshot: number | null;
 };
 
 export async function submitQuoteAction(formData: FormData) {
@@ -33,8 +34,8 @@ export async function submitQuoteAction(formData: FormData) {
     return { error: "Your bag is empty." };
   }
 
-  const hasUnpriced = items.some(i => i.priceKobo === null);
-  const totalKobo = hasUnpriced ? null : items.reduce((sum, i) => sum + ((i.priceKobo || 0) * i.qty), 0);
+  const hasUnpriced = items.some(i => i.priceKoboSnapshot === null);
+  const totalKobo = hasUnpriced ? null : items.reduce((sum, i) => sum + ((i.priceKoboSnapshot || 0) * i.qty), 0);
   const reference = "OKI-" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000).toString().padStart(3, "0");
 
   let notes = null;
@@ -69,7 +70,7 @@ export async function submitQuoteAction(formData: FormData) {
       productId: item.productId,
       productNameSnapshot: item.productNameSnapshot,
       qty: item.qty,
-      priceKobo: item.priceKobo
+      priceKoboSnapshot: item.priceKoboSnapshot, productSlugSnapshot: item.productSlugSnapshot
     }))
   );
 
@@ -107,3 +108,5 @@ export async function getCloudinaryKeys() {
     apiKey: process.env.CLOUDINARY_API_KEY
   };
 }
+
+
