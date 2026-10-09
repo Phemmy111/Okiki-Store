@@ -117,15 +117,16 @@ export default async function BundlePage({ params }: { params: Promise<{ slug: s
             </p>
           </div>
 
-          <a
-            href={`https://wa.me/${waNumber.replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 bg-navy hover:bg-navy-mid text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
-          >
-            <PackageCheck className="h-5 w-5" />
-            Order This Bundle on WhatsApp
-          </a>
+          <div className="w-full max-w-sm mt-6">
+              <AddToQuoteButton
+                productId={-bundle.id}
+                name={bundle.name + " Bundle"}
+                slug={"bundle-" + bundle.slug}
+                priceKobo={bundle.priceKobo}
+                imagePublicId={null}
+                variant="detail"
+              />
+            </div>
         </div>
       </div>
     </>
