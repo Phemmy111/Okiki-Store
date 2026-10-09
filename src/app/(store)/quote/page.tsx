@@ -83,7 +83,7 @@ export default function QuotePage() {
         setError(result.error as string);
       } else {
         setSubmittedName(customerName);
-        setSubmittedRef(result.reference);
+        setSubmittedRef(result.reference as string);
         try { const stored = JSON.parse(localStorage.getItem("okiki_orders") || "[]"); stored.push(result.reference); localStorage.setItem("okiki_orders", JSON.stringify(stored)); } catch {}
         clearQuote();
       }
@@ -366,6 +366,7 @@ export default function QuotePage() {
     </div>
   );
 }
+
 
 
 
