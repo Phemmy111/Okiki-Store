@@ -1,4 +1,5 @@
-﻿"use client";`nimport React, { useState, useTransition } from "react";
+"use client";
+import React, { useState, useTransition } from "react";
 import { updateOrderStatusAction, deleteOrderAction } from "./actions";
 
 type OrderItem = {
@@ -83,7 +84,7 @@ export default function AdminOrdersClient({ orders }: { orders: Order[] }) {
                   <td className="py-4 px-5 text-sm text-text-secondary">{order.customerPhone}</td>
                   <td className="py-4 px-5 text-sm font-medium text-navy">{order.items.length}</td>
                   <td className="py-4 px-5">
-                    <span className={\inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide \\}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusBadge(order.status)}`}>
                       {order.status}
                     </span>
                   </td>
@@ -112,6 +113,7 @@ export default function AdminOrdersClient({ orders }: { orders: Order[] }) {
                           <div>
                             <p className="text-xs font-bold text-navy mb-1 uppercase tracking-wide">Payment Receipt</p>
                             <a href={order.receiptUrl} target="_blank" rel="noopener noreferrer">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={order.receiptUrl} alt="Receipt" className="w-full max-w-sm rounded-xl border border-border" />
                             </a>
                           </div>
@@ -147,4 +149,3 @@ export default function AdminOrdersClient({ orders }: { orders: Order[] }) {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 import { db } from "@/db";
 import { orders, orderItems } from "@/db/schema";
 
@@ -37,6 +37,15 @@ export async function submitQuoteAction(formData: FormData) {
   const totalKobo = hasUnpriced ? null : items.reduce((sum, i) => sum + ((i.priceKobo || 0) * i.qty), 0);
   const reference = "OKI-" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000).toString().padStart(3, "0");
 
+  let notes = null;
+  if (message && businessName) {
+    notes = `Business: ${businessName}\nMessage: ${message}`;
+  } else if (message) {
+    notes = message;
+  } else if (businessName) {
+    notes = `Business: ${businessName}`;
+  }
+
   const [inserted] = await db
     .insert(orders)
     .values({ 
@@ -44,13 +53,13 @@ export async function submitQuoteAction(formData: FormData) {
       customerName: name, 
       customerPhone: phone, 
       customerEmail: email,
-      deliveryMethod: "delivery", // Defaulting to delivery for now
-      notes: message ? (businessName ? \Business: \\\nMessage: \\ : message) : (businessName ? \Business: \\ : null),
+      deliveryMethod: "delivery",
+      notes,
       receiptUrl, 
       totalKobo,
-      status: "processing", // The user asked for "processing, confirmed, delivered, rejected". We'll start with processing
+      status: "processing",
       paymentMethod: receiptUrl ? "transfer" : null,
-      paymentStatus: receiptUrl ? "unpaid" : "unpaid" // admin verifies to make it paid
+      paymentStatus: receiptUrl ? "unpaid" : "unpaid"
     })
     .returning({ id: orders.id, reference: orders.reference });
 
@@ -82,7 +91,7 @@ export async function submitQuoteAction(formData: FormData) {
         emails,
         { name, phone, businessName, message, receiptUrl },
         items.map((i) => ({ name: i.productNameSnapshot, qty: i.qty })),
-        inserted.id // Wait, email template expects quoteId as number, it will print #ID.
+        inserted.id
       );
     }
   } catch (error) {

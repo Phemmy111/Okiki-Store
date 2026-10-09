@@ -99,7 +99,7 @@ export default function MyOrdersClient() {
                 <div>
                   <p className="text-xs text-text-muted uppercase tracking-wide font-bold mb-1">Total</p>
                   <p className="text-sm font-medium text-navy">
-                    {order.totalKobo ? \`₦\${(order.totalKobo / 100).toLocaleString()}\` : "N/A"}
+                    {order.totalKobo ? `₦${(order.totalKobo / 100).toLocaleString()}` : "N/A"}
                   </p>
                 </div>
                 <div>
@@ -114,7 +114,7 @@ export default function MyOrdersClient() {
                     <div key={item.id} className="flex items-center justify-between text-sm">
                       <span className="text-navy">{item.productNameSnapshot} <span className="text-text-muted">x{item.qty}</span></span>
                       <span className="font-medium text-text-secondary">
-                        {item.priceKobo ? \`₦\${(item.priceKobo / 100).toLocaleString()}\` : "Ask for price"}
+                        {item.priceKobo ? `₦${(item.priceKobo / 100).toLocaleString()}` : "Ask for price"}
                       </span>
                     </div>
                   ))}

@@ -16,7 +16,8 @@ const NAV_LINKS = [
   { label: "Electronics", href: "/categories/home-electronics" },
   { label: "Generators", href: "/categories/power-generators" },
   { label: "Bundles", href: "/bundles" },
-  { label: "Visit Us", href: "/store" },`n  { label: "My Orders", href: "/my-orders" },
+  { label: "Visit Us", href: "/store" },
+  { label: "My Orders", href: "/my-orders" },
 ];
 
 // WhatsApp SVG icon (inline — no extra dependency)
@@ -215,4 +216,6 @@ export default function Header() {
     </header>
   );
 }
+
+
 
