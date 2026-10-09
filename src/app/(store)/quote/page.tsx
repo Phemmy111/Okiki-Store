@@ -1,4 +1,5 @@
 "use client";
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { useState, useTransition, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +11,7 @@ import { submitQuoteAction, getCloudinaryKeys } from "@/lib/actions/submit-quote
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ?? "";
 
 export default function QuotePage() {
+  const { user, isSignedIn, isLoaded } = useUser();
   const { items, removeItem, updateQty, clearQuote } = useQuoteStore();
   const [isPending, startTransition] = useTransition();
   const [submittedName, setSubmittedName] = useState("");
@@ -242,6 +244,15 @@ export default function QuotePage() {
             className="bg-white border border-border rounded-2xl p-6 shadow-sm space-y-4 sticky top-20"
           >
             <h2 className="font-bold text-navy text-lg">Your Details</h2>
+            {isLoaded && !isSignedIn && (
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl text-sm mb-4">
+                <p className="text-blue-800 mb-2"><strong>Want to track this order across all your devices?</strong></p>
+                <SignInButton mode="modal">
+                  <button type="button" className="text-blue-600 font-bold hover:underline">Log in or create an account</button>
+                </SignInButton>
+                <span className="text-blue-800"> before checking out!</span>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-semibold text-navy mb-1">
@@ -250,6 +261,7 @@ export default function QuotePage() {
               <input
                 name="name"
                 required
+                defaultValue={user?.fullName || ""}
                 placeholder="e.g. Aisha Bello"
                 className="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-gold/50 bg-white"
               />
@@ -262,6 +274,7 @@ export default function QuotePage() {
               <input
                 name="email"
                 required
+                defaultValue={user?.primaryEmailAddress?.emailAddress || ""}
                 type="email"
                 placeholder="e.g. hello@example.com"
                 className="w-full border border-border rounded-xl px-4 py-2.5 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-gold/50 bg-white"
@@ -366,6 +379,11 @@ export default function QuotePage() {
     </div>
   );
 }
+
+
+
+
+
 
 
 

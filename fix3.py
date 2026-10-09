@@ -1,10 +1,14 @@
-"use server";
-import { db } from "@/db";
-import { orders, orderItems } from "@/db/schema";
-import { eq, inArray, or } from "drizzle-orm";
-import { auth, currentUser } from "@clerk/nextjs/server";
+﻿import re
 
-export async function fetchMyOrdersAction(references: string[]) {
+with open('src/app/(store)/my-orders/actions.ts', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+content = content.replace(
+    'import { eq, inArray } from "drizzle-orm";',
+    'import { eq, inArray, or } from "drizzle-orm";\nimport { auth, currentUser } from "@clerk/nextjs/server";'
+)
+
+new_func = '''export async function fetchMyOrdersAction(references: string[]) {
   const { userId } = await auth();
   const user = await currentUser();
   const email = user?.primaryEmailAddress?.emailAddress;
@@ -33,17 +37,14 @@ export async function fetchMyOrdersAction(references: string[]) {
     ...o,
     items: items.filter(i => i.orderId === o.id)
   })).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-}
+}'''
 
-export async function trackOrderAction(reference: string, email: string) {
-  const [order] = await db
-    .select()
-    .from(orders)
-    .where(eq(orders.reference, reference));
+content = re.sub(
+    r'export async function fetchMyOrdersAction\(references: string\[\]\) \{.*?\n\}',
+    new_func,
+    content,
+    flags=re.DOTALL
+)
 
-  if (!order || order.customerEmail?.toLowerCase() !== email.toLowerCase()) {
-    return { error: "Order not found or email does not match." };
-  }
-
-  return { success: true };
-}
+with open('src/app/(store)/my-orders/actions.ts', 'w', encoding='utf-8') as f:
+    f.write(content)

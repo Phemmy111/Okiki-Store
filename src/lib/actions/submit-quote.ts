@@ -1,5 +1,6 @@
 "use server";
 import { db } from "@/db";
+import { auth } from "@clerk/nextjs/server";
 import { orders, orderItems } from "@/db/schema";
 
 type QuoteItemInput = {
@@ -11,6 +12,7 @@ type QuoteItemInput = {
 };
 
 export async function submitQuoteAction(formData: FormData) {
+  const { userId } = await auth();
   const name = (formData.get("name") as string).trim();
   const phone = (formData.get("phone") as string).trim();
   const email = (formData.get("email") as string)?.trim() || null;
@@ -54,6 +56,7 @@ export async function submitQuoteAction(formData: FormData) {
       customerName: name, 
       customerPhone: phone, 
       customerEmail: email,
+      userId: userId || null,
       deliveryMethod: "delivery",
       notes,
       receiptUrl, 

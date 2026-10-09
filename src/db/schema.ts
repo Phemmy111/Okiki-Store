@@ -157,6 +157,7 @@ export const orders = pgTable("orders", {
   customerName: varchar("customer_name", { length: 255 }).notNull(),
   customerPhone: varchar("customer_phone", { length: 50 }).notNull(),
   customerEmail: varchar("customer_email", { length: 255 }),
+  userId: varchar("user_id", { length: 255 }),
   deliveryMethod: varchar("delivery_method", { length: 20 }).notNull(), // pickup, delivery
   deliveryArea: varchar("delivery_area", { length: 255 }),
   deliveryAddress: text("delivery_address"),
@@ -199,3 +200,4 @@ export const activityLog = pgTable("activity_log", {
   diff: jsonb("diff"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
