@@ -70,7 +70,7 @@ export async function submitQuoteAction(formData: FormData) {
   await db.insert(orderItems).values(
     items.map((item) => ({
       orderId: inserted.id,
-      productId: item.productId,
+      productId: item.productId > 0 ? item.productId : null,
       productNameSnapshot: item.productNameSnapshot,
       qty: item.qty,
       priceKoboSnapshot: item.priceKoboSnapshot, productSlugSnapshot: item.productSlugSnapshot

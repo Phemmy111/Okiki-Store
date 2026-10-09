@@ -5,7 +5,8 @@ import type { Metadata } from "next";
 import { getBundles, getBundleBySlug, getMediaSlot, getStoreSettings } from "@/lib/data/storefront";
 import MediaSlider from "@/components/store/MediaSlider";
 import { buildCloudinaryUrl } from "@/lib/cloudinary-client";
-import { ChevronRight, PackageCheck } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import AddToQuoteButton from "@/components/store/AddToQuoteButton";
 
 export async function generateStaticParams() {
   const allBundles = await getBundles();
