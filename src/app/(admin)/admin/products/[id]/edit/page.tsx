@@ -4,6 +4,10 @@ import { requireAdminDb } from "@/lib/data/auth";
 import { eq, asc } from "drizzle-orm";
 import EditProductForm from "./form";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Edit Product | Admin" };
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdminDb();
@@ -30,19 +34,17 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const allCategories = await db.select().from(categories).orderBy(asc(categories.name));
   const allBrands = await db.select().from(brands).orderBy(asc(brands.name));
 
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
-
-  if (!cloudName || !apiKey) {
-    return (
-      <div className="p-8 text-center text-red-500 font-medium bg-red-50 rounded-2xl">
-        Cloudinary is not configured. Missing NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME or NEXT_PUBLIC_CLOUDINARY_API_KEY.
-      </div>
-    );
-  }
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME || "";
+  const apiKey = process.env.CLOUDINARY_API_KEY || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || "";
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex items-center gap-3">
+        <Link href="/admin/products" className="text-text-muted hover:text-navy transition-colors text-sm">
+          ← Back to Products
+        </Link>
+      </div>
+
       <div>
         <h1 className="font-display text-2xl font-bold text-navy">Edit Product</h1>
         <p className="text-sm text-text-secondary mt-1">Update product details, pricing, and images.</p>

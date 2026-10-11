@@ -9,51 +9,85 @@ import { eq } from "drizzle-orm";
 export async function editProductAction(formData: FormData) {
   await requireAdminDb();
 
-  const id = parseInt(formData.get("id") as string);
-  const thumbnail = formData.get("thumbnail") as string;
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const categoryId = formData.get("categoryId") ? parseInt(formData.get("categoryId") as string) : null;
-  const brandId = formData.get("brandId") ? parseInt(formData.get("brandId") as string) : null;
-  const priceMode = formData.get("priceMode") as string;
-  const priceNaira = formData.get("price") ? parseFloat(formData.get("price") as string) : null;
-  const compareAtNaira = formData.get("compareAt") ? parseFloat(formData.get("compareAt") as string) : null;
-  const stockStatus = formData.get("stockStatus") as string;
-  const stockQty = formData.get("stockQty") ? parseInt(formData.get("stockQty") as string) : 0;
-  const warrantyNote = formData.get("warrantyNote") as string;
-  const deliveryNote = formData.get("deliveryNote") as string;
+  const id = parseInt(formData.get("id") as string, 10);
+  if (!id || isNaN(id)) {
+    throw new Error("Invalid product ID");
+  }
+
+  const thumbnail = (formData.get("thumbnail") as string) || "";
+  const name = (formData.get("name") as string)?.trim();
+  if (!name) {
+    throw new Error("Product name is required");
+  }
+
+  const description = (formData.get("description") as string)?.trim() || null;
+
+  const rawCat = formData.get("categoryId") as string;
+  const categoryId = rawCat && !isNaN(parseInt(rawCat, 10)) ? parseInt(rawCat, 10) : null;
+
+  const rawBrand = formData.get("brandId") as string;
+  const brandId = rawBrand && !isNaN(parseInt(rawBrand, 10)) ? parseInt(rawBrand, 10) : null;
+
+  const priceMode = (formData.get("priceMode") as string) || "show";
+
+  const priceStr = formData.get("price") as string | null;
+  const priceNaira = priceStr !== null && priceStr.trim() !== "" ? parseFloat(priceStr) : null;
+  const priceKobo = priceNaira !== null && !isNaN(priceNaira) ? Math.round(priceNaira * 100) : null;
+
+  const compareAtStr = formData.get("compareAt") as string | null;
+  const compareAtNaira = compareAtStr !== null && compareAtStr.trim() !== "" ? parseFloat(compareAtStr) : null;
+  const compareAtKobo = compareAtNaira !== null && !isNaN(compareAtNaira) ? Math.round(compareAtNaira * 100) : null;
+
+  const stockStatus = (formData.get("stockStatus") as string) || "in_stock";
+  const stockQtyStr = formData.get("stockQty") as string | null;
+  const stockQty = stockQtyStr && !isNaN(parseInt(stockQtyStr, 10)) ? parseInt(stockQtyStr, 10) : 0;
+
+  const warrantyNote = (formData.get("warrantyNote") as string)?.trim() || null;
+  const deliveryNote = (formData.get("deliveryNote") as string)?.trim() || null;
+
   const isFeatured = formData.get("isFeatured") === "on";
   const isNewArrival = formData.get("isNewArrival") === "on";
   const isHotDeal = formData.get("isHotDeal") === "on";
-  const isPublished = formData.get("isPublished") !== "off";
-  const mediaPublicIds = (formData.get("mediaPublicIds") as string || "").split(",").filter(Boolean);
-  const mediaTypes = (formData.get("mediaTypes") as string || "").split(",").filter(Boolean);
+  const isPublished = formData.get("isPublished") === "on";
 
-  // Auto-generate slug from name if name changed significantly, but here we can just update existing
-  // Usually we keep the slug the same unless forced, but let's keep it simple and update the product.
+  const mediaPublicIds = (formData.get("mediaPublicIds") as string || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const mediaTypes = (formData.get("mediaTypes") as string || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
-  await db.update(products).set({
-    name,
-    description: description || null,
-    categoryId,
-    brandId,
-    priceKobo: priceNaira ? Math.round(priceNaira * 100) : null,
-    compareAtKobo: compareAtNaira ? Math.round(compareAtNaira * 100) : null,
-    priceMode,
-    stockStatus,
-    stockQty,
-    warrantyNote: warrantyNote || null,
-    deliveryNote: deliveryNote || null,
-    isFeatured,
-    isNewArrival,
-    isHotDeal,
-    isPublished,
-  }).where(eq(products.id, id));
+  const [existingProduct] = await db.select().from(products).where(eq(products.id, id));
+  if (!existingProduct) {
+    throw new Error("Product not found");
+  }
 
-  // Delete old media and replace
+  await db
+    .update(products)
+    .set({
+      name,
+      description,
+      categoryId,
+      brandId,
+      priceKobo: priceMode === "show" ? priceKobo : null,
+      compareAtKobo: priceMode === "show" ? compareAtKobo : null,
+      priceMode,
+      stockStatus,
+      stockQty,
+      warrantyNote,
+      deliveryNote,
+      isFeatured,
+      isNewArrival,
+      isHotDeal,
+      isPublished,
+    })
+    .where(eq(products.id, id));
+
+  // Delete old media and replace with updated set
   await db.delete(productMedia).where(eq(productMedia.productId, id));
 
-  // Save thumbnail first (sortOrder: 0), then additional media
   const allMedia: { productId: number; publicId: string; type: "image" | "video"; sortOrder: number }[] = [];
 
   if (thumbnail) {
@@ -62,12 +96,14 @@ export async function editProductAction(formData: FormData) {
 
   if (mediaPublicIds.length > 0) {
     mediaPublicIds.forEach((publicId, i) => {
-      allMedia.push({
-        productId: id,
-        publicId,
-        type: (mediaTypes[i] === "video" ? "video" : "image") as "image" | "video",
-        sortOrder: i + 1, // starts after thumbnail
-      });
+      if (publicId !== thumbnail) {
+        allMedia.push({
+          productId: id,
+          publicId,
+          type: (mediaTypes[i] === "video" ? "video" : "image") as "image" | "video",
+          sortOrder: allMedia.length,
+        });
+      }
     });
   }
 
@@ -76,6 +112,9 @@ export async function editProductAction(formData: FormData) {
   }
 
   revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${id}/edit`);
+  revalidatePath(`/products/${existingProduct.slug}`);
   revalidatePath("/shop");
+  revalidatePath("/");
   redirect("/admin/products");
 }
