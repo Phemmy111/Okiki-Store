@@ -7,6 +7,7 @@ import MediaSlider from "@/components/store/MediaSlider";
 import { buildCloudinaryUrl } from "@/lib/cloudinary-client";
 import { ChevronRight } from "lucide-react";
 import AddToQuoteButton from "@/components/store/AddToQuoteButton";
+import BundleItemsList from "@/components/store/BundleItemsList";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -69,36 +70,14 @@ export default async function BundlePage({ params }: { params: Promise<{ slug: s
         )}
 
         {/* Items List */}
-        <h2 className="font-display font-bold text-2xl text-navy mb-6 border-b border-border pb-3">
-          What's Included
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-          {bundle.items.map((item) => {
-            const img = item.product?.primaryMedia
-              ? buildCloudinaryUrl(item.product.primaryMedia.publicId, { format: "auto", quality: "auto", crop: "pad" })
-              : null;
-
-            return (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 bg-card border border-border rounded-xl p-4 shadow-sm"
-              >
-                <div className="h-14 w-14 relative flex-shrink-0 rounded-lg overflow-hidden bg-white border border-border">
-                  {img ? (
-                    <Image src={img} alt={item.product?.name ?? "Product"} fill className="object-contain p-1" sizes="56px" />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-2xl">📦</div>
-                  )}
-                </div>
-                <div>
-                  <p className="font-semibold text-navy text-sm">{item.product?.name ?? "Product"}</p>
-                  <p className="text-text-secondary text-xs">Qty: {item.qty}</p>
-                </div>
-              </div>
-            );
-          })}
+        <div className="flex items-center justify-between border-b border-border pb-3 mb-6">
+          <h2 className="font-display font-bold text-2xl text-navy">
+            What's Included
+          </h2>
+          <span className="text-xs text-text-muted">Click any item to view full details</span>
         </div>
+
+        <BundleItemsList items={bundle.items} />
 
         {/* Pricing and CTA */}
         <div className={`rounded-2xl p-8 text-center shadow-md ${isStandard ? "border-2 border-gold bg-gold/5" : "bg-card border border-border"}`}>

@@ -243,31 +243,39 @@ export async function getBundleBySlug(slug: string) {
       productName: products.name,
       productSlug: products.slug,
       productPriceKobo: products.priceKobo,
+      productCompareAtKobo: products.compareAtKobo,
+      productPriceMode: products.priceMode,
+      productDescription: products.description,
+      productWarrantyNote: products.warrantyNote,
+      productDeliveryNote: products.deliveryNote,
+      productSpecs: products.specs,
     })
     .from(bundleItems)
     .leftJoin(products, eq(bundleItems.productId, products.id))
     .where(eq(bundleItems.bundleId, bundle.id));
 
-  // Attach primary media to items
+  // Attach all media to products in this bundle
   const productIds = rawItems
     .map((i) => i.productId)
     .filter((id): id is number => typeof id === "number");
 
-  let mediaMap: Record<number, string | null> = {};
+  let mediaByProduct: Record<number, { publicId: string; type: string }[]> = {};
   if (productIds.length > 0) {
     const allMedia = await db
       .select({
         productId: productMedia.productId,
         publicId: productMedia.publicId,
+        type: productMedia.type,
       })
       .from(productMedia)
       .where(inArray(productMedia.productId, productIds))
       .orderBy(asc(productMedia.sortOrder), desc(productMedia.id));
 
     for (const m of allMedia) {
-      if (!mediaMap[m.productId]) {
-        mediaMap[m.productId] = m.publicId;
+      if (!mediaByProduct[m.productId]) {
+        mediaByProduct[m.productId] = [];
       }
+      mediaByProduct[m.productId].push({ publicId: m.publicId, type: m.type });
     }
   }
 
@@ -280,8 +288,15 @@ export async function getBundleBySlug(slug: string) {
           name: item.productName ?? "Product",
           slug: item.productSlug ?? "",
           priceKobo: item.productPriceKobo ?? null,
-          primaryMedia: mediaMap[item.productId]
-            ? { publicId: mediaMap[item.productId]! }
+          compareAtKobo: item.productCompareAtKobo ?? null,
+          priceMode: item.productPriceMode ?? "show",
+          description: item.productDescription ?? null,
+          warrantyNote: item.productWarrantyNote ?? null,
+          deliveryNote: item.productDeliveryNote ?? null,
+          specs: (item.productSpecs as { label: string; value: string }[]) ?? [],
+          media: mediaByProduct[item.productId] ?? [],
+          primaryMedia: mediaByProduct[item.productId]?.[0]
+            ? { publicId: mediaByProduct[item.productId][0].publicId }
             : null,
         }
       : null,
