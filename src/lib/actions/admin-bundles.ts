@@ -31,13 +31,22 @@ export async function createBundleAction(formData: FormData) {
   });
 
   revalidatePath("/admin/bundles");
+  revalidatePath("/bundles");
+  revalidatePath(`/bundles/${slug}`);
+  revalidatePath("/");
 }
 
 /* ── Delete Bundle ──────────────────────────────────────────────────────── */
 export async function deleteBundleAction(id: number) {
   await requireAdminDb();
+  const [b] = await db.select({ slug: bundles.slug }).from(bundles).where(eq(bundles.id, id));
   await db.delete(bundles).where(eq(bundles.id, id));
   revalidatePath("/admin/bundles");
+  revalidatePath("/bundles");
+  if (b?.slug) {
+    revalidatePath(`/bundles/${b.slug}`);
+  }
+  revalidatePath("/");
 }
 
 /* ── Add Item to Bundle ─────────────────────────────────────────────────── */
@@ -49,12 +58,29 @@ export async function addBundleItemAction(formData: FormData) {
   const qty = parseInt(formData.get("qty") as string) || 1;
 
   await db.insert(bundleItems).values({ bundleId, productId, qty });
+  
+  const [b] = await db.select({ slug: bundles.slug }).from(bundles).where(eq(bundles.id, bundleId));
   revalidatePath("/admin/bundles");
+  revalidatePath("/bundles");
+  if (b?.slug) {
+    revalidatePath(`/bundles/${b.slug}`);
+  }
+  revalidatePath("/");
 }
 
 /* ── Remove Item from Bundle ────────────────────────────────────────────── */
 export async function removeBundleItemAction(itemId: number) {
   await requireAdminDb();
+  const [item] = await db.select({ bundleId: bundleItems.bundleId }).from(bundleItems).where(eq(bundleItems.id, itemId));
   await db.delete(bundleItems).where(eq(bundleItems.id, itemId));
+
   revalidatePath("/admin/bundles");
+  revalidatePath("/bundles");
+  if (item?.bundleId) {
+    const [b] = await db.select({ slug: bundles.slug }).from(bundles).where(eq(bundles.id, item.bundleId));
+    if (b?.slug) {
+      revalidatePath(`/bundles/${b.slug}`);
+    }
+  }
+  revalidatePath("/");
 }

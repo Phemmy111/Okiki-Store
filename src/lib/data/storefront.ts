@@ -235,23 +235,56 @@ export async function getBundleBySlug(slug: string) {
   const bundle = bRes[0];
 
   // Get items
-  const items = await db
+  const rawItems = await db
     .select({
       id: bundleItems.id,
       qty: bundleItems.qty,
-      product: products,
+      productId: bundleItems.productId,
+      productName: products.name,
+      productSlug: products.slug,
+      productPriceKobo: products.priceKobo,
     })
     .from(bundleItems)
     .leftJoin(products, eq(bundleItems.productId, products.id))
     .where(eq(bundleItems.bundleId, bundle.id));
 
   // Attach primary media to items
-  const productList = items.map((i) => i.product).filter(Boolean);
-  const productsWithMedia = await attachPrimaryMedia(productList);
+  const productIds = rawItems
+    .map((i) => i.productId)
+    .filter((id): id is number => typeof id === "number");
 
-  const enrichedItems = items.map((i) => ({
-    ...i,
-    product: productsWithMedia.find((p) => p.id === i.product?.id),
+  let mediaMap: Record<number, string | null> = {};
+  if (productIds.length > 0) {
+    const allMedia = await db
+      .select({
+        productId: productMedia.productId,
+        publicId: productMedia.publicId,
+      })
+      .from(productMedia)
+      .where(inArray(productMedia.productId, productIds))
+      .orderBy(asc(productMedia.sortOrder), desc(productMedia.id));
+
+    for (const m of allMedia) {
+      if (!mediaMap[m.productId]) {
+        mediaMap[m.productId] = m.publicId;
+      }
+    }
+  }
+
+  const enrichedItems = rawItems.map((item) => ({
+    id: item.id,
+    qty: item.qty,
+    product: item.productId
+      ? {
+          id: item.productId,
+          name: item.productName ?? "Product",
+          slug: item.productSlug ?? "",
+          priceKobo: item.productPriceKobo ?? null,
+          primaryMedia: mediaMap[item.productId]
+            ? { publicId: mediaMap[item.productId]! }
+            : null,
+        }
+      : null,
   }));
 
   return { ...bundle, items: enrichedItems };

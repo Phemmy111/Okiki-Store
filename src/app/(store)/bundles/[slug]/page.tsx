@@ -8,10 +8,8 @@ import { buildCloudinaryUrl } from "@/lib/cloudinary-client";
 import { ChevronRight } from "lucide-react";
 import AddToQuoteButton from "@/components/store/AddToQuoteButton";
 
-export async function generateStaticParams() {
-  const allBundles = await getBundles();
-  return allBundles.map((b) => ({ slug: b.slug }));
-}
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
